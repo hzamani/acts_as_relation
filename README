@@ -1,0 +1,45 @@
+Multi-table inheritance
+=======================
+
+Multi-table inheritance happens when each model in the hierarchy is a model all by itself
+that corresponds to its own database table and can be queried and created individually.
+The inheritance relationship introduces links between the child model and each of its
+parents (via an automatically-created `has_one` associations).
+
+ActsAsRealation
+===============
+
+With `acts_as_relation` multi-table inheritance is as easy as adding two extra columns
+`<parent_name>_type` and `<parent_name>_id` to parent model and put an
+`acts_as :<parent_name>` in the child!
+
+Example
+=======
+
+  rails g model product name:string price:float product_type:string product_id:integer
+  rails g model pen color:string
+
+  class Product < ActiveRecord::Base
+    validates_presence_of :name, :price
+    
+    def hello
+      puts "Hello, My name is '#{name}', my price is $#{price}."
+    end
+  end
+
+  class Pen < ActiveRecord::Base
+    acts_as :product
+  end
+  
+  p = Pen.new
+  p.valid? => false
+  p.errors => {:name=>["can't be blank"], :price=>["can't be blank"]}
+   
+  pen = Pen.new(:name=>"Red Pen", :color=>:red, :price=>0.99)
+  pen.save
+  pen.hello => Hello, My name is 'Red Pen', my price is $0.99.
+  
+  Product.where("price <= 1")
+
+
+Copyright (c) 2011 Hassan Zamani, released under the MIT license
