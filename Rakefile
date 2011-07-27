@@ -1,4 +1,5 @@
 require 'rake'
+require 'rake/testtask'
 require 'rubygems'
 require 'rubygems/package_task'
 
@@ -18,3 +19,10 @@ Gem::PackageTask.new(spec) do |pkg|
   pkg.need_tar = true
 end
 
+desc 'Test the acts_as_relation plugin.'
+Rake::TestTask.new(:test) do |t|
+  t.libs << 'lib'
+  t.libs << 'test'
+  t.pattern = 'test/**/*_test.rb'
+  t.verbose = true
+end
