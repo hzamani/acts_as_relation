@@ -52,9 +52,6 @@ module ActiveRecord
             end
 
             def method_missing(method, *arg, &block)
-              #{name}.send(method, *arg, &block)
-            rescue NoMethodError
-              super
             end
             
             def respond_to?(method, include_private_methods = false)

@@ -14,11 +14,11 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string  :product_type
     t.integer :product_id
   end
-  
+
   create_table :pens do |t|
     t.string  :color
   end
-  
+
   create_table :pencils
 end
 
