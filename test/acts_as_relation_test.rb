@@ -65,6 +65,15 @@ class ActsAsRelationTest < ActiveSupport::TestCase
     assert(pencil.respond_to? :color_was)
   end
 
+  test "association reflections" do
+    store = Store.new
+    pen = Pen.new
+    pen.store = store
+
+    assert_equal store, pen.product.store
+    assert_equal store, pen.store
+  end
+
 end
 
 #ActiveRecord::Base.connection.tables.each do |table|
