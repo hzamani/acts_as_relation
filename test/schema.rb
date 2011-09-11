@@ -8,6 +8,11 @@ ActiveRecord::Base.establish_connection(
 )
 
 ActiveRecord::Schema.define(:version => 1) do
+
+  create_table :stores do |t|
+    t.string :store_name
+  end
+
   create_table :products do |t|
     t.string  :name
     t.float   :price
@@ -22,7 +27,12 @@ ActiveRecord::Schema.define(:version => 1) do
   create_table :pencils
 end
 
+class Store < ActiveRecord::Base
+  has_many :products
+end
+
 class Product < ActiveRecord::Base
+  belongs_to :store
   validates_presence_of :name, :price
 end
 
