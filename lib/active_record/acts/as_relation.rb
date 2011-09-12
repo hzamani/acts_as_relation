@@ -39,11 +39,12 @@ module ActiveRecord
               base.has_one :#{name}, :as => :#{name}, :autosave => true, :validate => false
               base.validate :#{name}_must_be_valid
               base.alias_method_chain :#{name}, :autobuild
-              
+
               base.extend ActiveRecord::Acts::AsRelation::AccessMethods
               all_attributes = #{name.camelcase.constantize}.content_columns.map(&:name)
               ignored_attributes = ["created_at", "updated_at", "#{name}_type"]
-              attributes_to_delegate = all_attributes - ignored_attributes
+              associations = #{name.camelcase.constantize}.reflect_on_all_associations(:belongs_to).map! { |assoc| assoc.name }
+              attributes_to_delegate = all_attributes - ignored_attributes + associations
               base.define_acts_as_accessors(attributes_to_delegate, "#{name}")
             end
             
