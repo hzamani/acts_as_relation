@@ -22,6 +22,8 @@ ActiveRecord::Schema.define(:version => 1) do
 
   create_table :pens do |t|
     t.string  :color
+    t.integer :pen_id
+    t.string :pen_type
   end
 
   create_table :pencils
