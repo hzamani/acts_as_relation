@@ -74,6 +74,15 @@ class ActsAsRelationTest < ActiveSupport::TestCase
     assert_equal store, pen.store
   end
 
+  test "method inheritance" do
+    pen = Pen.new
+    pen.name = "a_pen"
+    pen.price = 12
+    pen.color = "red"
+    pen.save
+
+    assert_equal "a_pen - 12.0$", pen.hello
+  end
 end
 
 #ActiveRecord::Base.connection.tables.each do |table|

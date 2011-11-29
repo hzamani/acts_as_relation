@@ -36,6 +36,10 @@ end
 class Product < ActiveRecord::Base
   belongs_to :store
   validates_presence_of :name, :price
+
+  def hello
+    "#{name} - #{price}$"
+  end
 end
 
 class Pen < ActiveRecord::Base

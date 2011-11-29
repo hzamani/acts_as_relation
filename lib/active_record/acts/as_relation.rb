@@ -53,6 +53,7 @@ module ActiveRecord
             end
 
             def method_missing(method, *arg, &block)
+              self.#{name}.send method, *arg, &block
             end
             
             def respond_to?(method, include_private_methods = false)
