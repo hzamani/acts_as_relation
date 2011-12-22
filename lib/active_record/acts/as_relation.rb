@@ -4,7 +4,7 @@ module ActiveRecord
       def self.included(base)
         base.extend(ClassMethods)
       end
-      
+
       module AccessMethods
         def define_acts_as_accessors(attribs, model_name)
           attribs.each do |attrib|
@@ -24,16 +24,16 @@ module ActiveRecord
           end
         end
       end
-      
+
       module ClassMethods
-      
+
         def acts_as(model_name)
           name = model_name.to_s.underscore.singularize
-          
+
           # Create A AsModel module
           as_model = Module.new
           Object.const_set("As#{name.camelcase}", as_model)
-          
+
           as_model.module_eval <<-EndModule
             def self.included(base)
               base.has_one :#{name}, :as => :#{name}, :autosave => true, :validate => false
@@ -47,20 +47,23 @@ module ActiveRecord
               attributes_to_delegate = all_attributes - ignored_attributes + associations
               base.define_acts_as_accessors(attributes_to_delegate, "#{name}")
             end
-            
+
             def #{name}_with_autobuild
               #{name}_without_autobuild || build_#{name}
             end
 
-            def method_missing(method, *arg, &block)
+            def method_missing method, *arg, &block
+              #{name}.send method, *arg, &block
+            rescue NoMethodError
+              super
             end
-            
+
             def respond_to?(method, include_private_methods = false)
               super || self.#{name}.respond_to?(method, include_private_methods)
             end
-            
+
             protected
-            
+
             def #{name}_must_be_valid
               unless #{name}.valid?
                 #{name}.errors.each do |att, message|
@@ -69,12 +72,12 @@ module ActiveRecord
               end
             end
           EndModule
-          
+
           class_eval do
             include "As#{name.camelcase}".constantize
           end
         end
-        
+
       end
     end
   end

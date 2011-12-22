@@ -74,6 +74,19 @@ class ActsAsRelationTest < ActiveSupport::TestCase
     assert_equal store, pen.store
   end
 
+  test "call parent methods" do
+    pen = Pen.new(:name=>"RedPen", :price=>0.59, :color=>"red")
+    assert_equal pen.parent_method, "RedPen - 0.59"
+  end
+
+  test "call unexisted method" do
+    assert_raise NoMethodError do
+      pen = Pen.new
+      pen.unexisted_method
+    end
+
+  end
+
 end
 
 #ActiveRecord::Base.connection.tables.each do |table|
