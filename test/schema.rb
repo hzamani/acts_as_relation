@@ -13,17 +13,13 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string :store_name
   end
 
-  create_table :products do |t|
+  create_table :products, :as_relation_superclass => true do |t|
     t.string  :name
     t.float   :price
-    t.string  :product_type
-    t.integer :product_id
   end
 
-  create_table :pens do |t|
+  create_table :pens, :as_relation_superclass => true do |t|
     t.string  :color
-    t.integer :pen_id
-    t.string :pen_type
   end
 
   create_table :pencils
@@ -34,11 +30,19 @@ class Store < ActiveRecord::Base
 end
 
 class Product < ActiveRecord::Base
+  acts_as_superclass
+
   belongs_to :store
   validates_presence_of :name, :price
+
+  def parent_method
+    "#{name} - #{price}"
+  end
 end
 
 class Pen < ActiveRecord::Base
+  acts_as_superclass
+
   acts_as :product
   validates_presence_of :color
 end
