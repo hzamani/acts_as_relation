@@ -74,6 +74,45 @@ class ActsAsRelationTest < ActiveSupport::TestCase
     assert_equal store, pen.store
   end
 
+  test "call parent methods" do
+    pen = Pen.new(:name=>"RedPen", :price=>0.59, :color=>"red")
+    assert_equal pen.parent_method, "RedPen - 0.59"
+  end
+
+  test "call unexisted method" do
+    assert_raise NoMethodError do
+      pen = Pen.new
+      pen.unexisted_method
+    end
+
+  end
+
+  test "acts as association name" do
+    assert_equal Pencil.acts_as_association_name, 'pencilable'
+    assert_equal Pencil.acts_as_association_name( Pen ), 'penable'
+  end
+
+  test "acts as superclass" do
+    pen = Pen.create(:name => "RedPen", :price => 0.59, :color => "red")
+    product = pen.product
+
+    assert_equal product.specific_class.class, Pen
+  end
+
+  test "destroy action" do
+    pen = Pen.create(:name => "RedPen", :price => 0.59, :color => "red")
+    product = pen.product
+
+    pen.destroy
+
+    assert_raise ActiveRecord::RecordNotFound do
+      Product.find product.id
+    end
+    assert_raise ActiveRecord::RecordNotFound do
+      Pen.find pen.id
+    end
+  end
+
 end
 
 #ActiveRecord::Base.connection.tables.each do |table|
