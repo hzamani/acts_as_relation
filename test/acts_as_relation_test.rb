@@ -87,6 +87,32 @@ class ActsAsRelationTest < ActiveSupport::TestCase
 
   end
 
+  test "acts as association name" do
+    assert_equal Pencil.acts_as_association_name, 'pencilable'
+    assert_equal Pencil.acts_as_association_name( Pen ), 'penable'
+  end
+
+  test "acts as superclass" do
+    pen = Pen.create(:name => "RedPen", :price => 0.59, :color => "red")
+    product = pen.product
+
+    assert_equal product.specific_class.class, Pen
+  end
+
+  test "destroy action" do
+    pen = Pen.create(:name => "RedPen", :price => 0.59, :color => "red")
+    product = pen.product
+
+    pen.destroy
+
+    assert_raise ActiveRecord::RecordNotFound do
+      Product.find product.id
+    end
+    assert_raise ActiveRecord::RecordNotFound do
+      Pen.find pen.id
+    end
+  end
+
 end
 
 #ActiveRecord::Base.connection.tables.each do |table|
