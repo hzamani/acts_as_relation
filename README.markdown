@@ -19,19 +19,14 @@ parents (via an automatically-created `has_one` associations).
 Example
 -------
 
-Required columns on parent model name `parent1` are
-
- 1. `parent1_type`
- 2. `parent1_id`
-
 generate models
 
     $ rails g model product name:string price:float
-    Add next option to Product Migration:
-    create_table :products, :as_relation_superclass => true
-    ...
-
     $ rails g model pen color:string
+
+Add next option to Product Migration:
+
+    create_table :products, :as_relation_superclass => true
 
 add some validations and instance methods
 
@@ -65,7 +60,7 @@ to get name of association used between superclass and children can be used meth
 
     Product.acts_as_association_name # 'Productable'
 
-after deleting specific object will removed linked superobject:
+after deleting specific object will be removed linked superobject:
 
     Pen.first.destroy # delete as Pen row as linked Product row
 
