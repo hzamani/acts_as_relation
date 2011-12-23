@@ -50,7 +50,7 @@ module ActiveRecord
 
           as_model.module_eval <<-EndModule
             def self.included(base)
-              base.has_one :#{name}, :as => :#{association_name}, :autosave => true, :validate => false
+              base.has_one :#{name}, :as => :#{association_name}, :autosave => true, :validate => false, :dependent => :destroy
               base.validate :#{name}_must_be_valid
               base.alias_method_chain :#{name}, :autobuild
 
