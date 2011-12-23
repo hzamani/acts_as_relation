@@ -13,17 +13,13 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string :store_name
   end
 
-  create_table :products do |t|
+  create_table :products, :as_relation_superclass => true do |t|
     t.string  :name
     t.float   :price
-    t.string  :productable_type
-    t.integer :productable_id
   end
 
-  create_table :pens do |t|
+  create_table :pens, :as_relation_superclass => true do |t|
     t.string  :color
-    t.integer :penable_id
-    t.string :penable_type
   end
 
   create_table :pencils

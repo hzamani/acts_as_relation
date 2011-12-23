@@ -110,3 +110,5 @@ module ActiveRecord
     end
   end
 end
+
+ActiveRecord::Base.send :include, ActiveRecord::Acts::AsRelation
