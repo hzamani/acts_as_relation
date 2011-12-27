@@ -45,52 +45,55 @@ module ActiveRecord
         def acts_as(model_name)
           name = model_name.to_s.underscore.singularize
           association_name = acts_as_association_name name
+          module_name = "As#{name.camelcase}"
 
-          # Create A AsModel module
-          as_model = Module.new
-          Object.const_set("As#{name.camelcase}", as_model)
+          unless Object.const_defined? module_name
+            # Create A AsModel module
+            as_model = Module.new
+            Object.const_set(module_name, as_model)
 
-          as_model.module_eval <<-EndModule
-            def self.included(base)
-              base.has_one :#{name}, :as => :#{association_name}, :autosave => true, :validate => false, :dependent => :destroy
-              base.validate :#{name}_must_be_valid
-              base.alias_method_chain :#{name}, :autobuild
+            as_model.module_eval <<-EndModule
+              def self.included(base)
+                base.has_one :#{name}, :as => :#{association_name}, :autosave => true, :validate => false, :dependent => :destroy
+                base.validate :#{name}_must_be_valid
+                base.alias_method_chain :#{name}, :autobuild
 
-              base.extend ActiveRecord::Acts::AsRelation::AccessMethods
-              all_attributes = #{name.camelcase.constantize}.content_columns.map(&:name)
-              ignored_attributes = ["created_at", "updated_at", "#{association_name}_type"]
-              associations = #{name.camelcase.constantize}.reflect_on_all_associations(:belongs_to).map! { |assoc| assoc.name }
-              attributes_to_delegate = all_attributes - ignored_attributes + associations
-              base.define_acts_as_accessors(attributes_to_delegate, "#{name}")
-            end
+                base.extend ActiveRecord::Acts::AsRelation::AccessMethods
+                all_attributes = #{name.camelcase.constantize}.content_columns.map(&:name)
+                ignored_attributes = ["created_at", "updated_at", "#{association_name}_type"]
+                associations = #{name.camelcase.constantize}.reflect_on_all_associations(:belongs_to).map! { |assoc| assoc.name }
+                attributes_to_delegate = all_attributes - ignored_attributes + associations
+                base.define_acts_as_accessors(attributes_to_delegate, "#{name}")
+              end
 
-            def #{name}_with_autobuild
-              #{name}_without_autobuild || build_#{name}
-            end
+              def #{name}_with_autobuild
+                #{name}_without_autobuild || build_#{name}
+              end
 
-            def method_missing method, *arg, &block
-              #{name}.send method, *arg, &block
-            rescue NoMethodError
-              super
-            end
+              def method_missing method, *arg, &block
+                #{name}.send method, *arg, &block
+              rescue NoMethodError
+                super
+              end
 
-            def respond_to?(method, include_private_methods = false)
-              super || self.#{name}.respond_to?(method, include_private_methods)
-            end
+              def respond_to?(method, include_private_methods = false)
+                super || self.#{name}.respond_to?(method, include_private_methods)
+              end
 
-            protected
+              protected
 
-            def #{name}_must_be_valid
-              unless #{name}.valid?
-                #{name}.errors.each do |att, message|
-                  errors.add(att, message)
+              def #{name}_must_be_valid
+                unless #{name}.valid?
+                  #{name}.errors.each do |att, message|
+                    errors.add(att, message)
+                  end
                 end
               end
-            end
-          EndModule
+            EndModule
+          end
 
           class_eval do
-            include "As#{name.camelcase}".constantize
+            include module_name.constantize
           end
         end
 
