@@ -14,11 +14,11 @@ module ActiveRecord
               end
 
               def #{attrib}=(value)
-                self.#{model_name}.#{attrib} = value
+                #{model_name}.#{attrib} = value
               end
 
               def #{attrib}?
-                self.#{model_name}.#{attrib}?
+                #{model_name}.#{attrib}?
               end
             EndClass
           end
@@ -60,8 +60,8 @@ module ActiveRecord
 
                 base.extend ActiveRecord::Acts::AsRelation::AccessMethods
                 all_attributes = #{name.camelcase.constantize}.content_columns.map(&:name)
-                ignored_attributes = ["created_at", "updated_at", "#{association_name}_type"]
-                associations = #{name.camelcase.constantize}.reflect_on_all_associations(:belongs_to).map! { |assoc| assoc.name }
+                ignored_attributes = ["created_at", "updated_at", "#{association_name}_id", "#{association_name}_type"]
+                associations = #{name.camelcase.constantize}.reflect_on_all_associations.map! { |assoc| assoc.name } - ["#{association_name}"]
                 attributes_to_delegate = all_attributes - ignored_attributes + associations
                 base.define_acts_as_accessors(attributes_to_delegate, "#{name}")
               end
@@ -71,13 +71,15 @@ module ActiveRecord
               end
 
               def method_missing method, *arg, &block
-                #{name}.send method, *arg, &block
+                raise NoMethodError if method.to_s == 'id' || method.to_s == '#{name}'
+
+                #{name}.send(method, *arg, &block)
               rescue NoMethodError
                 super
               end
 
               def respond_to?(method, include_private_methods = false)
-                super || self.#{name}.respond_to?(method, include_private_methods)
+                super || #{name}.respond_to?(method, include_private_methods)
               end
 
               protected
