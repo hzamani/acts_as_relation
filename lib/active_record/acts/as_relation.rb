@@ -5,6 +5,9 @@ module ActiveRecord
         base.extend(ClassMethods)
       end
 
+      module AsModules
+      end
+
       module AccessMethods
         def define_acts_as_accessors(attribs, model_name)
           attribs.each do |attrib|
@@ -47,10 +50,10 @@ module ActiveRecord
           association_name = acts_as_association_name name
           module_name = "As#{name.camelcase}"
 
-          unless Object.const_defined? module_name
+          unless ActiveRecord::Acts::AsRelation::AsModules.const_defined? module_name
             # Create A AsModel module
             as_model = Module.new
-            Object.const_set(module_name, as_model)
+            ActiveRecord::Acts::AsRelation::AsModules.const_set(module_name, as_model)
 
             as_model.module_eval <<-EndModule
               def self.included(base)
@@ -95,7 +98,7 @@ module ActiveRecord
           end
 
           class_eval do
-            include module_name.constantize
+            include "ActiveRecord::Acts::AsRelation::AsModules::#{module_name}".constantize
           end
         end
 
