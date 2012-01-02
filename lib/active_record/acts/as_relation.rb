@@ -31,10 +31,10 @@ module ActiveRecord
           model_name = self.name unless model_name
 
           name = model_name.to_s.demodulize.singularize
-          if name[-1].chr =~ /[^aeiou]/ || name[-2..-1] =~ /ge|ce/
-            name = name + suffix
-          elsif name[-7..-1] == 'ability'
+          if name[-7..-1] == 'ability'
             name = name[0..-8] + suffix
+          elsif name[-1].chr =~ /[^aeiou]/ || name[-2..-1] =~ /ge|ce/
+            name = name + suffix
           else
             name = name[0..-2] + suffix
           end

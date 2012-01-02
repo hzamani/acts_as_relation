@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(:version => 1) do
   end
 
   create_table :pencils
+  create_table :availabilities
 end
 
 class Store < ActiveRecord::Base
@@ -49,4 +50,7 @@ end
 
 class Pencil < ActiveRecord::Base
   acts_as :pen
+end
+
+class Availability < ActiveRecord::Base
 end
