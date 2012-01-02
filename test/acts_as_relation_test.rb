@@ -88,6 +88,7 @@ class ActsAsRelationTest < ActiveSupport::TestCase
   end
 
   test "acts as association name" do
+    assert_equal Availability.acts_as_association_name, 'available'
     assert_equal Pencil.acts_as_association_name, 'pencilable'
     assert_equal Pencil.acts_as_association_name( Pen ), 'penable'
   end
