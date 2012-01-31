@@ -3,4 +3,5 @@
 .rvmrc
 Gemfile.lock
 pkg/*
-
+*.sqlite3
+*.log

@@ -23,8 +23,11 @@ Gem::Specification.new do |s|
 
 
   # Dependencies (installed via 'bundle install')...
-  s.add_development_dependency("bundler")
-  s.add_development_dependency("rake")
-  s.add_development_dependency("sqlite3")
-  s.add_development_dependency("activerecord")
+  s.add_development_dependency "rake"
+  s.add_development_dependency "bundler"
+  s.add_development_dependency "sqlite3"
+  s.add_development_dependency "rspec"
+  s.add_development_dependency "rails"
+  s.add_development_dependency "database_cleaner"
+  s.add_dependency "activerecord"
 end
