@@ -51,6 +51,23 @@ describe "Submodel" do
     lambda { Product.find product_id }.should raise_error(ActiveRecord::RecordNotFound)
   end
 
+  describe "Query Interface" do
+    it "spec_name" do
+      Pen.acts_as_other_model?.should be_true
+    end
+    describe "auto_join" do
+      it "automaticaly joins Supermodel on Submodel queries" do
+        pen = Pen.create :name => 'RedPen',  :price => 0.8, :color => 'red'
+        Pen.create :name => 'RedPen2', :price => 1.2, :color => 'red'
+        Pen.create :name => 'BluePen', :price => 1.2, :color => 'blue'
+        lambda { Pen.where("price > 1").to_a }.should_not raise_error(ActiveRecord::StatementInvalid)
+        Pen.where("name = ?", "RedPen").should include(pen)
+      end
+
+      it "can be disabled by setting auto_join option to false" do
+        lambda { Pencil.where("name = 1").to_a }.should raise_error(ActiveRecord::StatementInvalid)
+      end
+    end
   end
 end
 

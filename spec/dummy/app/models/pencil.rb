@@ -1,3 +1,3 @@
 class Pencil < ActiveRecord::Base
-  acts_as :pen
+  acts_as :product, :auto_join => false
 end

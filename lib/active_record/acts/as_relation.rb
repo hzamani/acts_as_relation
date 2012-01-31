@@ -45,10 +45,12 @@ module ActiveRecord
           name.underscore
         end
 
-        def acts_as(model_name)
+        def acts_as(model_name, options={})
           name = model_name.to_s.underscore.singularize
           association_name = acts_as_association_name name
           module_name = "As#{name.camelcase}"
+
+          options[:auto_join] = true if options[:auto_join].nil?
 
           unless ActiveRecord::Acts::AsRelation::AsModules.const_defined? module_name
             # Create A AsModel module
@@ -99,6 +101,10 @@ module ActiveRecord
 
           class_eval do
             include "ActiveRecord::Acts::AsRelation::AsModules::#{module_name}".constantize
+          end
+
+          if options[:auto_join]
+            class_eval "default_scope joins(:#{name})"
           end
         end
 
