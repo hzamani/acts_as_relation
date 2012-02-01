@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   # Description Meta...
   s.name        = 'acts_as_relation'
-  s.version     = ActiveRecord::Acts::AsRelation::VERSION
+  s.version     = ActiveRecord::ActsAsRelation::VERSION
   s.platform    = Gem::Platform::RUBY
   s.author      = 'Hassan Zamani'
   s.email       = 'hsn.zamani@gmail.com'
