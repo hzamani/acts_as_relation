@@ -122,6 +122,7 @@ module ActiveRecord
           alias :specific_class :specific
         EndEval
       end
+      alias :is_a_superclass :acts_as_superclass
 
       def acts_as_association_name model_name=nil
         model_name ||= self.name

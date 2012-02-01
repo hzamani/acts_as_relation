@@ -1,0 +1,98 @@
+= ActsAsRelation
+
+A +acts_as+ relationship sets up a one-to-one connection with another model,
+such that declaring model inherits from other model (with separate database
+tabels). For example in a shop all products have common attributes (+name+,
++price+, +image+ ...), while each type of them has their specific attributes,
++pen+ has +color+, +book+ has +author+ and +publisher+ and so on.
+
+ActiveRecord only supports singletable inheritance, but with single table inheritance
+number of attributes on parent model (product in this example) grow exponentially,
+and must of them will always stay +NULL+.
+
++acts_as+ use a polymorphic +has_one+
+association to simulate a multi-table inheritance. For the shop example you'd
+declare the product as a +supermodel+ and all types of it as +acts_as+ +:product+
+(if you prefer you can use their aliases +is_a+ and +is_a_superclass+)
+
+  class Product < ActiveRecord::Base
+    acts_as_superclass
+  end
+
+  class Pen < ActiveRecord::Base
+    acts_as :product
+  end
+
+  class Book < ActiveRecord::Base
+    acts_as :product
+  end
+
+To make this work, you need to declare both a foreign key column and a type column
+in the model that declares superclass. To do this you can set +:as_relation_superclass+
+option to +true+ on +products+ +create_table+ (or pass it name of the association):
+
+  create_table :products, :as_relation_superclass => true do |t|
+    # ...
+  end
+
+Or declare them as you do on a +polymorphic+ +belongs_to+ association, it this case
+you must pass name to +acts_as+ in +:as+ option:
+
+  change_table :products do |t|
+    t.integer :producible_id
+    t.string  :producible_type
+  end
+
+  class Pen < ActiveRecord::Base
+    acts_as :product, :as => :producible
+  end
+
+Now +Pen+ and +Book+ *act* *as* +Product+. This means that they inherit +Product+
+_attributes_, _associations_, _validations_ and _methods_.
+
+To see its functionality lets add some stuff to product:
+
+  class Product
+    validates_presence_of :name, :price
+
+    def to_s
+      "#{name} $#{price}"
+    end
+  end
+
+now we can to things like this:
+
+  Pen.create :name => "Nice Pen", :price => 1.3, :color => "Red"
+  Pen.where "name = ?", "Some Pen"
+  pen = Pen.new
+  pen.valid?      # => false
+  pen.errors.keys # => [:name, :price]
+  Pen.first.to_s  # => "Nice Pen $1.3"
+
+When you declare an +acts_as+ relation, the declaring class automatically gains parent
+methods (includeing accessors) so you can access them directly.
+
+On the other hand you can always access a specific object from its parent by calling +specific+ method on it:
+
+    Product.first.specific # will return a specific product, a pen for example
+
+== Options
+The +acts_as+ relation support these options:
+
+* +:as+
+* +:auto_join+
+* +:class_name+
+* +:conditions+
+* +:dependent+
+* +:include+
+
+when +:auto_join+ option set to +true+ (wich is by default), every query on child
+will automatically joins with paren. For example:
+
+    Pen.where("name = ?", "somename")
+
+will result in the following SQL:
+
+    SELECT "pens".* FROM "pens" INNER JOIN "products" ON "products"."as_product_id" = "pens"."id" AND "products"."as_product_type" = 'Pen' WHERE (name = 'somename')
+
+All other options are same as +has_one+ options.
