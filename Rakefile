@@ -1,12 +1,7 @@
 require 'rake'
-require 'rake/testtask'
+require 'rspec/core/rake_task'
 
-task default: :test
+task :default => :spec
 
-desc 'Test the acts_as_relation plugin.'
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = true
-end
+desc 'Run specs'
+RSpec::Core::RakeTask.new
