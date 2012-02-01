@@ -1,7 +1,11 @@
 require 'spec_helper'
 
 describe "Submodel" do
-  it "inherits Supermodel attributes" do 
+  before :all do
+    ActsAsRelationSchema.migrate
+  end
+
+  it "inherits Supermodel attributes" do
     pen = Pen.new
     ['name', 'name=', 'name_changed?', 'name_was',
      'price', 'price=', 'price_changed?', 'price_was'].each do |m|
@@ -51,10 +55,19 @@ describe "Submodel" do
     lambda { Product.find product_id }.should raise_error(ActiveRecord::RecordNotFound)
   end
 
-  describe "Query Interface" do
-    it "spec_name" do
+  describe "#acts_as_other_model?" do
+    it "return true on models wich acts_as other ones" do
       Pen.acts_as_other_model?.should be_true
     end
+  end
+
+  describe "#acts_as_model_name" do
+    it "returns name of model wich it acts as" do
+      Pen.acts_as_model_name.should == :product
+    end
+  end
+
+  describe "Query Interface" do
     describe "auto_join" do
       it "automaticaly joins Supermodel on Submodel queries" do
         pen = Pen.create :name => 'RedPen',  :price => 0.8, :color => 'red'
@@ -75,7 +88,7 @@ describe "Supermodel" do
   describe "#specific" do
     it "returns the specific subclass object" do
       pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
-      pen.product.specific_class.should == pen
+      pen.product.specific.should == pen
     end
   end
 end

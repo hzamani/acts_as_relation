@@ -103,7 +103,7 @@ module ActiveRecord
             true
           end
 
-          def acts_as_model
+          def acts_as_model_name
             :#{name}
           end
         EndEval
