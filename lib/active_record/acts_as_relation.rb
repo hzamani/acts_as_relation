@@ -113,8 +113,8 @@ module ActiveRecord
       end
       alias :is_a :acts_as
 
-      def acts_as_superclass
-        association_name = acts_as_association_name
+      def acts_as_superclass options={}
+        association_name = options[:as] || acts_as_association_name
 
         code = <<-EndCode
           belongs_to :#{association_name}, :polymorphic => true
