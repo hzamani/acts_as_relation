@@ -9,7 +9,7 @@ module ActiveRecord
       protected
       def define_acts_as_accessors(attribs, model_name)
         attribs.each do |attrib|
-          class_eval <<-EndEval
+          code = <<-EndCode
             def #{attrib}
               #{model_name}.#{attrib}
             end
@@ -21,7 +21,8 @@ module ActiveRecord
             def #{attrib}?
               #{model_name}.#{attrib}?
             end
-          EndEval
+          EndCode
+          class_eval code, __FILE__, __LINE__
         end
       end
     end
@@ -48,7 +49,7 @@ module ActiveRecord
             :conditions => options[:conditions]
           }
 
-          acts_as_model.module_eval <<-EndEval
+          code = <<-EndCode
             def self.included(base)
               base.has_one :#{name}, #{has_one_options}
               base.validate :#{name}_must_be_valid
@@ -87,7 +88,8 @@ module ActiveRecord
                 end
               end
             end
-          EndEval
+          EndCode
+          acts_as_model.module_eval code, __FILE__, __LINE__
         end
 
         class_eval do
@@ -98,7 +100,7 @@ module ActiveRecord
           class_eval "default_scope joins(:#{name})"
         end
 
-        instance_eval <<-EndEval
+        code = <<-EndCode
           def acts_as_other_model?
             true
           end
@@ -106,21 +108,23 @@ module ActiveRecord
           def acts_as_model_name
             :#{name}
           end
-        EndEval
+        EndCode
+        instance_eval code, __FILE__, __LINE__
       end
       alias :is_a :acts_as
 
       def acts_as_superclass
         association_name = acts_as_association_name
 
-        class_eval <<-EndEval
+        code = <<-EndCode
           belongs_to :#{association_name}, :polymorphic => true
 
           def specific
             self.#{association_name}
           end
           alias :specific_class :specific
-        EndEval
+        EndCode
+        class_eval code, __FILE__, __LINE__
       end
       alias :is_a_superclass :acts_as_superclass
 
