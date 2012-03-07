@@ -1,10 +1,6 @@
 require 'spec_helper'
 
 describe "Submodel" do
-  before :all do
-    ActsAsRelationSchema.migrate
-  end
-
   it "inherits Supermodel attributes" do
     pen = Pen.new
     ['name', 'name=', 'name_changed?', 'name_was',
@@ -41,6 +37,13 @@ describe "Submodel" do
     pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
     pen.should respond_to('parent_method')
     pen.parent_method.should == "RedPen - 0.8"
+  end
+
+  it "inherits Supermodel dynamic finders" do
+    pending
+    pen = Pen.create :name => 'RedPen'
+    product = Product.create :name => 'SomeProduct'
+    Product.find_by_name('SomeProduct').should == product
   end
 
   it "should raise NoMethodEror on unexisting method calls" do
