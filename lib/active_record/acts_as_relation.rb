@@ -97,7 +97,7 @@ module ActiveRecord
         end
 
         if options.fetch :auto_join, true
-          class_eval "default_scope joins(:#{name})"
+          class_eval "default_scope joins(:#{name}).readonly(false)"
         end
 
         code = <<-EndCode
