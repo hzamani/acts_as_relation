@@ -39,12 +39,12 @@ describe "Submodel" do
     pen.parent_method.should == "RedPen - 0.8"
   end
 
-  it "inherits Supermodel dynamic finders" do
-    pending
-    pen = Pen.create :name => 'RedPen'
-    product = Product.create :name => 'SomeProduct'
-    Product.find_by_name('SomeProduct').should == product
-  end
+  # it "inherits Supermodel dynamic finders" do
+  #   pending
+  #   pen = Pen.create :name => 'RedPen'
+  #   product = Product.create :name => 'SomeProduct'
+  #   Product.find_by_name('SomeProduct').should == product
+  # end
 
   it "should raise NoMethodEror on unexisting method calls" do
     pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
@@ -68,6 +68,18 @@ describe "Submodel" do
     it "returns name of model wich it acts as" do
       Pen.acts_as_model_name.should == :product
     end
+  end
+
+  it "should be findable" do
+    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+    pen = Pen.find(pen.id)
+    pen.should be_valid
+  end
+
+  it "should be saveable" do
+    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+    pen = Pen.find(pen.id)
+    lambda { pen.save }.should_not raise_error
   end
 
   describe "Query Interface" do
