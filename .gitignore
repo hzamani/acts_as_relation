@@ -7,3 +7,4 @@ tmp/*
 doc/*
 *.sqlite3
 *.log
+spec/dummy/tmp/*
