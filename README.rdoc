@@ -17,10 +17,12 @@ declare the product as a +supermodel+ and all types of it as +acts_as+ +:product
 
   class Product < ActiveRecord::Base
     acts_as_superclass
+    attr_accessible :name, :price
   end
 
   class Pen < ActiveRecord::Base
     acts_as :product
+    attr_accessible :color
   end
 
   class Book < ActiveRecord::Base
