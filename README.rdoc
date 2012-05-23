@@ -80,14 +80,14 @@ On the other hand you can always access a specific object from its parent by cal
 The +acts_as+ relation support these options:
 
 * +:as+
-* +:auto_include+
+* +:auto_join+
 * +:class_name+
 * +:conditions+
 * +:dependent+
 * +:include+
 
 when +:auto_join+ option set to +true+ (which is by default), every query on child
-will automatically includes the parent. For example:
+will automatically joins the parent table. For example:
 
     Pen.where("name = ?", "somename")
 
