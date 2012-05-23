@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(:version => 4) do
     t.string   "producible_type"
     t.string   "name"
     t.float    "price"
+    t.integer  "store_id"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
   end

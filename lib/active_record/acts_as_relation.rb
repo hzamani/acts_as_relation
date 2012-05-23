@@ -56,10 +56,10 @@ module ActiveRecord
               base.alias_method_chain :#{name}, :autobuild
 
               base.extend ActiveRecord::ActsAsRelation::AccessMethods
-              all_attributes = #{class_name}.content_columns.map(&:name)
-              ignored_attributes = ["created_at", "updated_at", "#{association_name}_id", "#{association_name}_type"]
-              associations = #{class_name}.reflect_on_all_associations.map! { |assoc| assoc.name } - ["#{association_name}"]
-              attributes_to_delegate = all_attributes - ignored_attributes + associations
+              attributes = #{class_name}.content_columns.map(&:name)
+              associations = #{class_name}.reflect_on_all_associations.map(&:name)
+              ignored = ["created_at", "updated_at", "#{association_name}_id", "#{association_name}_type", "#{association_name}"]
+              attributes_to_delegate = attributes + associations - ignored
               base.send :define_acts_as_accessors, attributes_to_delegate, "#{name}"
             end
 

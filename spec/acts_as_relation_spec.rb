@@ -20,11 +20,12 @@ describe "Submodel" do
   end
 
   it "inherits Supermodel associations" do
-    store = Store.new
-    pen = Pen.new
+    store = Store.create :name => 'Big Store'
+    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
     pen.store = store
-    pen.store.should == store
-    pen.product.store.should == store
+    pen.save
+    Pen.find(pen.id).store.should == store
+    Pen.find(pen.id).product.store.should == store
   end
 
   it "inherits Supermodel validations" do
