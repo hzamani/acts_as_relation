@@ -61,6 +61,8 @@ module ActiveRecord
               ignored = ["created_at", "updated_at", "#{association_name}_id", "#{association_name}_type", "#{association_name}"]
               attributes_to_delegate = attributes + associations - ignored
               base.send :define_acts_as_accessors, attributes_to_delegate, "#{name}"
+
+              base.attr_accessible.update(#{class_name}.attr_accessible)
             end
 
             def #{name}_with_autobuild

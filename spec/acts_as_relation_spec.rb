@@ -71,6 +71,12 @@ describe "Submodel" do
     end
   end
 
+  it "have supermodel attr_accessibles as attr_accessibles" do
+    Pen.attr_accessible[:default].each do |a|
+      Pencil.attr_accessible[:default].should include(a)
+    end
+  end
+
   it "should be findable" do
     pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
     pen = Pen.find(pen.id)
