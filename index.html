@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Acts as relation by hzamani</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/hzamani/acts_as_relation">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/hzamani/acts_as_relation/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/hzamani/acts_as_relation/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Acts as relation</h1>
+          <p>ActiveRecord MultiTable inheritance simulated</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/hzamani">hzamani</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <p>A <code>acts_as</code> relationship sets up a one-to-one connection with another model,
+such that declaring model inherits from other model (with separate database
+tabels). For example in a shop all products have common attributes (<code>name, price, image, ...</code>),
+while each type of them has their specific attributes, <code>pen</code> has <code>color</code>,
+<code>book</code> has <code>author</code> and <code>publisher</code> and so on.</p>
+
+<p>ActiveRecord only supports singletable inheritance, but with single table inheritance
+number of attributes on parent model (product in this example) grow exponentially,
+and must of them will always stay <code>NULL</code>.</p>
+
+<p><code>acts_as</code> use a polymorphic <code>has_one</code>
+association to simulate a multi-table inheritance. For the shop example you'd
+declare the product as a <code>supermodel</code> and all types of it as <code>acts_as :product</code>
+(if you prefer you can use their aliases <code>is_a</code> and <code>is_a_superclass</code>)</p>
+
+<div class="highlight">
+<pre><span class="k">class</span> <span class="nc">Product</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">acts_as_superclass</span>
+  <span class="n">attr_accessible</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:price</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Pen</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">acts_as</span> <span class="ss">:product</span>
+  <span class="n">attr_accessible</span> <span class="ss">:color</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Book</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">acts_as</span> <span class="ss">:product</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<p>To make this work, you need to declare both a foreign key column and a type column
+in the model that declares superclass. To do this you can set <code>:as_relation_superclass</code>
+option to <code>true</code> on <code>products</code> <code>create_table</code> (or pass it name of the association):</p>
+
+<div class="highlight">
+<pre><span class="n">create_table</span> <span class="ss">:products</span><span class="p">,</span> <span class="ss">:as_relation_superclass</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+  <span class="c1"># ...</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<p>Or declare them as you do on a <code>polymorphic</code> <code>belongs_to</code> association, it this case
+you must pass name to <code>acts_as</code> in <code>:as</code> option:</p>
+
+<div class="highlight">
+<pre><span class="n">change_table</span> <span class="ss">:products</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:producible_id</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">string</span>  <span class="ss">:producible_type</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Pen</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">acts_as</span> <span class="ss">:product</span><span class="p">,</span> <span class="ss">:as</span> <span class="o">=&gt;</span> <span class="ss">:producible</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<p>Now <code>Pen</code> and <code>Book</code> <strong>act as</strong> <code>Product</code>. This means that they inherit <code>Product</code>
+<em>attributes</em>, <em>associations</em>, <em>validations</em> and <em>methods</em>. (things defined in <code>Product</code> model)</p>
+
+<p>To see its functionality lets add some stuff to product:</p>
+
+<div class="highlight">
+<pre><span class="k">class</span> <span class="nc">Product</span>
+  <span class="n">validates_presence_of</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:price</span>
+
+  <span class="k">def</span> <span class="nf">to_s</span>
+    <span class="s2">"</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2"> $</span><span class="si">#{</span><span class="n">price</span><span class="si">}</span><span class="s2">"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<p>now we can to things like this:</p>
+
+<pre><code>&gt; Pen.create :name =&gt; "Nice Pen", :price =&gt; 1.3, :color =&gt; "Red"
+&gt; Pen.where "name = ?", "Some Pen"
+&gt; pen = Pen.new
+&gt; pen.valid? 
+  =&gt; false
+&gt; pen.errors.keys
+  =&gt; [:name, :price]
+&gt; Pen.first.to_s
+  =&gt; "Nice Pen $1.3"
+</code></pre>
+
+<p>When you declare an <code>acts_as</code> relation, the declaring class automatically gains parent
+methods (includeing accessors) so you can access them directly.</p>
+
+<p>On the other hand you can always access a specific object from its parent by calling <code>specific</code> method on it:</p>
+
+<pre><code>&gt; Product.first.specific # will return a specific product, a pen for example
+</code></pre>
+
+<h2>Options</h2>
+
+<p>The <code>acts_as</code> relation support these options:</p>
+
+<ul>
+<li><code>:as</code></li>
+<li><code>:auto_join</code></li>
+<li><code>:class_name</code></li>
+<li><code>:conditions</code></li>
+<li><code>:dependent</code></li>
+<li><code>:include</code></li>
+</ul><p>when <code>:auto_join</code> option set to <code>true</code> (which is by default), every query on child
+will automatically joins the parent table. For example:</p>
+
+<pre><code>&gt; Pen.where("name = ?", "somename")
+</code></pre>
+
+<p>will result in the following SQL:</p>
+
+<pre><code>SELECT "pens".* FROM "pens" INNER JOIN "products" ON "products"."as_product_id" = "pens"."id"  AND"products"."as_product_type" = 'Pen' WHERE (name = 'somename')
+</code></pre>
+
+<p>All other options are same as <code>has_one</code> options.</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+    
+  </body>
+</html>
