@@ -49,6 +49,11 @@ module ActiveRecord
             :conditions => options[:conditions]
           }
 
+          attr_accessible = if Rails.version < "4" or defined?(::ProtectedAttributes)
+            "base.attr_accessible.update(#{class_name}.attr_accessible)"
+          else
+            ""
+          end
           code = <<-EndCode
             def self.included(base)
               base.has_one :#{name}, #{has_one_options}
@@ -62,7 +67,7 @@ module ActiveRecord
               attributes_to_delegate = attributes + associations - ignored
               base.send :define_acts_as_accessors, attributes_to_delegate, "#{name}"
 
-              base.attr_accessible.update(#{class_name}.attr_accessible)
+              #{attr_accessible}
             end
 
             def #{name}_with_autobuild
