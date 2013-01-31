@@ -84,9 +84,7 @@ The +acts_as+ relation support these options:
 * +:as+
 * +:auto_join+
 * +:class_name+
-* +:conditions+
 * +:dependent+
-* +:include+
 
 when +:auto_join+ option set to +true+ (which is by default), every query on child
 will automatically joins the parent table. For example:
@@ -98,3 +96,9 @@ will result in the following SQL:
     SELECT "pens".* FROM "pens" INNER JOIN "products" ON "products"."as_product_id" = "pens"."id" AND "products"."as_product_type" = 'Pen' WHERE (name = 'somename')
 
 All other options are same as +has_one+ options.
+
+Note that support for +:conditions+ and +:include+ has been removed. In their place, you can use
++where()+ and +includes()+:
+
+    acts_as :product, -> { where(color: "yellow") }
+
