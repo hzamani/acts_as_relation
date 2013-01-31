@@ -113,10 +113,10 @@ module ActiveRecord
         end
 
         if options.fetch :auto_join, true
-          class_eval "default_scope joins(:#{name})"
+          class_eval "default_scope -> { joins(:#{name}) }"
         end
 
-        class_eval "default_scope readonly(false)"
+        class_eval "default_scope -> { readonly(false) }"
 
         code = <<-EndCode
           def acts_as_other_model?
