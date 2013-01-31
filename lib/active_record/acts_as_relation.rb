@@ -28,7 +28,19 @@ module ActiveRecord
     end
 
     module ClassMethods
-      def acts_as(model_name, options={})
+      def acts_as(model_name, scope=nil, options={})
+        if scope.is_a?(Hash)
+          options = scope
+          scope   = nil
+        end
+
+        if options[:conditions]
+          ActiveSupport::Deprecation.warn(":conditions is no longer supported by acts_as. Please use `where()` instead. Example: `acts_as :person, -> { where(name: 'John') }`")
+        end
+        if options[:include]
+          ActiveSupport::Deprecation.warn(":include is no longer supported by acts_as. Please use `includes()` instead. Example: `acts_as :person, -> { includes(:friends) }`")
+        end
+
         name             = model_name.to_s.underscore.singularize
         class_name       = options[:class_name] || name.camelcase
         association_name = options[:as] || acts_as_association_name(name)
@@ -50,17 +62,7 @@ module ActiveRecord
           acts_as_model.module_eval do
             singleton = class << self ; self end
             singleton.send :define_method, :included do |base|
-              if Rails.version < "4"
-                base.has_one name.to_sym, has_one_options.merge({:include => options[:include], :conditions => options[:conditions]})
-              else
-                l = -> do
-                  s = self
-                  s = s.where(options[:conditions])	if options[:conditions]
-                  s = s.includes(options[:include])	if options[:include]
-                  s
-                end
-                base.has_one name.to_sym, l, has_one_options
-              end
+              base.has_one name.to_sym, scope, has_one_options
               base.validate "#{name}_must_be_valid".to_sym
               base.alias_method_chain name.to_sym, :autobuild
 
@@ -71,7 +73,7 @@ module ActiveRecord
               attributes_to_delegate = attributes + associations - ignored
               base.send :define_acts_as_accessors, attributes_to_delegate, name
 
-              if Rails.version < "4" or defined?(::ProtectedAttributes)
+              if defined?(::ProtectedAttributes)
                 base.attr_accessible.update(class_name.constantize.attr_accessible)
               end
             end
