@@ -1,18 +1,24 @@
 = ActsAsRelation
+This gem helps implement multiple-table-inheritance (MTI) methods to your ActiveRecord models.
+By default, ActiveRecord only supports single-table inheritance (STI).
+MTI gives you the benefits of STI but without having to place dozens of empty fields into a single table.
 
-A +acts_as+ relationship sets up a one-to-one connection with another model,
-such that declaring model inherits from other model (with separate database
-tabels). For example in a shop all products have common attributes (+name+,
-+price+, +image+ ...), while each type of them has their specific attributes,
+Take a traditional e-commerce application for example... 
+A product has common attributes (+name+, +price+, +image+ ...), 
+while each type of product has its own attributes...
 +pen+ has +color+, +book+ has +author+ and +publisher+ and so on.
 
-ActiveRecord only supports singletable inheritance, but with single table inheritance
-number of attributes on parent model (product in this example) grow exponentially,
-and must of them will always stay +NULL+.
+== Installation
+  gem install acts_as_relation
+or within Gemfile
+  gem "acts_as_relation"
+and
+  $ bundle install
 
-+acts_as+ use a polymorphic +has_one+
-association to simulate a multi-table inheritance. For the shop example you'd
-declare the product as a +supermodel+ and all types of it as +acts_as+ +:product+
+== Usage
++acts_as_relation+ uses a polymorphic +has_one+
+association to simulate multiple-table inheritance. 
+For the e-commerce example you would declare the product as a +supermodel+ and all types of it as +acts_as+ +:product+
 (if you prefer you can use their aliases +is_a+ and +is_a_superclass+)
 
   class Product < ActiveRecord::Base
