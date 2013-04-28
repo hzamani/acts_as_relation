@@ -28,7 +28,19 @@ module ActiveRecord
     end
 
     module ClassMethods
-      def acts_as(model_name, options={})
+      def acts_as(model_name, scope=nil, options={})
+        if scope.is_a?(Hash)
+          options = scope
+          scope   = nil
+        end
+
+        if options[:conditions]
+          ActiveSupport::Deprecation.warn(":conditions is no longer supported by acts_as. Please use `where()` instead. Example: `acts_as :person, -> { where(name: 'John') }`")
+        end
+        if options[:include]
+          ActiveSupport::Deprecation.warn(":include is no longer supported by acts_as. Please use `includes()` instead. Example: `acts_as :person, -> { includes(:friends) }`")
+        end
+
         name             = model_name.to_s.underscore.singularize
         class_name       = options[:class_name] || name.camelcase
         association_name = options[:as] || acts_as_association_name(name)
@@ -45,53 +57,55 @@ module ActiveRecord
             :autosave   => true,
             :validate   => false,
             :dependent  => options.fetch(:dependent, :destroy),
-            :include    => options[:include],
-            :conditions => options[:conditions]
           }
 
-          code = <<-EndCode
-            def self.included(base)
-              base.has_one :#{name}, #{has_one_options}
-              base.validate :#{name}_must_be_valid
-              base.alias_method_chain :#{name}, :autobuild
+          acts_as_model.module_eval do
+            singleton = class << self ; self end
+            singleton.send :define_method, :included do |base|
+              base.has_one name.to_sym, scope, has_one_options
+              base.validate "#{name}_must_be_valid".to_sym
+              base.alias_method_chain name.to_sym, :autobuild
 
               base.extend ActiveRecord::ActsAsRelation::AccessMethods
-              attributes = #{class_name}.content_columns.map(&:name)
-              associations = #{class_name}.reflect_on_all_associations.map(&:name)
+              attributes = class_name.constantize.content_columns.map(&:name)
+              associations = class_name.constantize.reflect_on_all_associations.map(&:name)
               ignored = ["created_at", "updated_at", "#{association_name}_id", "#{association_name}_type", "#{association_name}"]
               attributes_to_delegate = attributes + associations - ignored
-              base.send :define_acts_as_accessors, attributes_to_delegate, "#{name}"
+              base.send :define_acts_as_accessors, attributes_to_delegate, name
 
-              base.attr_accessible.update(#{class_name}.attr_accessible)
+              if defined?(::ProtectedAttributes)
+                base.attr_accessible.update(class_name.constantize.attr_accessible)
+              end
             end
 
-            def #{name}_with_autobuild
-              #{name}_without_autobuild || build_#{name}
+            define_method "#{name}_with_autobuild" do
+              send("#{name}_without_autobuild") || send("build_#{name}")
             end
 
-            def method_missing method, *arg, &block
-              raise NoMethodError if method.to_s == 'id' || method.to_s == '#{name}'
+            define_method :method_missing do |method, *arg, &block|
+              begin
+                raise NoMethodError if method.to_s == 'id' || method.to_s == name
 
-              #{name}.send(method, *arg, &block)
-            rescue NoMethodError
-              super
+                send(name).send(method, *arg, &block)
+              rescue NoMethodError
+                super(method, *arg, &block)
+              end
             end
 
-            def respond_to?(method, include_private_methods = false)
-              super || #{name}.respond_to?(method, include_private_methods)
+            define_method 'respond_to?' do |method, include_private_methods = false|
+              super(method, include_private_methods) || send(name).respond_to?(method, include_private_methods)
             end
 
             protected
 
-            def #{name}_must_be_valid
-              unless #{name}.valid?
-                #{name}.errors.each do |att, message|
+            define_method "#{name}_must_be_valid" do
+              unless send(name).valid?
+                send(name).errors.each do |att, message|
                   errors.add(att, message)
                 end
               end
             end
-          EndCode
-          acts_as_model.module_eval code, __FILE__, __LINE__
+          end
         end
 
         class_eval do
@@ -99,10 +113,10 @@ module ActiveRecord
         end
 
         if options.fetch :auto_join, true
-          class_eval "default_scope joins(:#{name})"
+          class_eval "default_scope -> { joins(:#{name}) }"
         end
 
-        class_eval "default_scope readonly(false)"
+        class_eval "default_scope -> { readonly(false) }"
 
         code = <<-EndCode
           def acts_as_other_model?
