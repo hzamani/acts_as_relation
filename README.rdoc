@@ -9,11 +9,12 @@ while each type of product has its own attributes...
 +pen+ has +color+, +book+ has +author+ and +publisher+ and so on.
 
 == Installation
-  gem install acts_as_relation
-or within Gemfile
-  gem "acts_as_relation"
+For Rails 4 installation add the following line to your +Gemfile+
+  gem 'acts_as_relation', '~> 1.0'
 and
   $ bundle install
+
+If you are using Rails 3 you must use '~> 0.1' version specifier in Gemfile.
 
 == Usage
 +acts_as_relation+ uses a polymorphic +has_one+
@@ -23,12 +24,10 @@ For the e-commerce example you would declare the product as a +supermodel+ and a
 
   class Product < ActiveRecord::Base
     acts_as_superclass
-    attr_accessible :name, :price
   end
 
   class Pen < ActiveRecord::Base
     acts_as :product
-    attr_accessible :color
   end
 
   class Book < ActiveRecord::Base
