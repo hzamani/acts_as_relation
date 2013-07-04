@@ -116,7 +116,7 @@ module ActiveRecord
           class_eval "default_scope -> { joins(:#{name}) }"
         end
 
-        class_eval "default_scope -> { readonly(false) }"
+        class_eval "default_scope -> { includes(:#{name}) }"
 
         code = <<-EndCode
           def acts_as_other_model?
