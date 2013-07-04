@@ -72,8 +72,10 @@ describe "Submodel" do
   end
 
   it "have supermodel attr_accessibles as attr_accessibles" do
-    Pen.attr_accessible[:default].each do |a|
-      Pencil.attr_accessible[:default].should include(a)
+    if defined?(::ProtectedAttributes)
+      Pen.attr_accessible[:default].each do |a|
+        Pencil.attr_accessible[:default].should include(a)
+      end
     end
   end
 
