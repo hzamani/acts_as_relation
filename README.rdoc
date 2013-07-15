@@ -53,6 +53,10 @@ you must pass name to +acts_as+ in +:as+ option:
   class Pen < ActiveRecord::Base
     acts_as :product, :as => :producible
   end
+  
+  class Book < ActiveRecord::Base
+    acts_as :product, :as => :producible
+  end
 
 Now +Pen+ and +Book+ *act* *as* +Product+. This means that they inherit +Product+
 _attributes_, _associations_, _validations_ and _methods_.
