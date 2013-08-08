@@ -105,6 +105,11 @@ module ActiveRecord
                 end
               end
             end
+
+            define_method "acts_as?" do |model_name|
+              class_name.constantize == model_name
+            end
+
           end
         end
 

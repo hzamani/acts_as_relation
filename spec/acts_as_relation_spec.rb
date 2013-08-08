@@ -71,6 +71,18 @@ describe "Submodel" do
     end
   end
 
+  describe "#acts_as?" do
+    it "returns true if it acts as Product" do
+      pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+      pen.acts_as?(String).should == false
+    end
+
+    it "returns false if it does not acts as Product" do
+      pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+      pen.acts_as?(Product).should == true
+    end
+  end
+
   it "have supermodel attr_accessibles as attr_accessibles" do
     if defined?(::ProtectedAttributes)
       Pen.attr_accessible[:default].each do |a|
