@@ -89,6 +89,20 @@ describe "Submodel" do
     lambda { pen.save }.should_not raise_error
   end
 
+  describe "acts as the superclass in has_many relations" do
+    it "should return true for is_a? method when the supermodel is passed" do 
+      # (Pen.is_a? Product).should be_true
+      pen = Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
+      (pen.is_a? Product).should be_true
+    end
+
+    it "should be appendable using << operator in a has_many relation" do
+      store = Store.new(name: "Big Store")
+      store.products << Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
+      store.save!
+    end
+  end
+
   describe "Query Interface" do
     describe "auto_join" do
       it "automaticaly joins Supermodel on Submodel queries" do
