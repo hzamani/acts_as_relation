@@ -141,7 +141,7 @@ module ActiveRecord
     def is_a?(model_class)
       begin
         return true if model_class == self.class
-        return true if self.class.acts_as_other_model? and self.class.acts_as_model_name == model_class.name.downcase.to_sym
+        return true if self.class.acts_as_other_model? and self.class.acts_as_model_name == model_class.name.underscore.to_sym
       rescue
         return self.kind_of? model_class
       end
