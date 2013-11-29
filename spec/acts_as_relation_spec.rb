@@ -101,6 +101,18 @@ describe "Submodel" do
       store.products << Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
       store.save!
     end
+
+    it "should sets the parent_id when using the << operator" do
+      store = Store.new(name: "Big Store")
+      store.products << Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
+      store.save!
+   
+      store.products.each do |product|
+        product.store.should_not be_nil
+        product.store_id.should_not be_nil
+        product[:store_id].should_not be_nil
+      end
+    end
   end
 
   describe "Query Interface" do

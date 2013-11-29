@@ -50,6 +50,13 @@ module ActiveRecord
           }
 
           code = <<-EndCode
+
+            def parent_association_attributes
+              associations = #{class_name}.reflect_on_all_associations.map(&:name)
+              ignored = ["created_at", "updated_at", "#{association_name}_id", "#{association_name}_type", "#{association_name}"]
+              (associations - ignored).collect {|a| a.to_s + '_id'}
+            end
+
             def self.included(base)
               base.has_one :#{name}, #{has_one_options}
               base.validate :#{name}_must_be_valid
@@ -79,6 +86,22 @@ module ActiveRecord
 
             def respond_to?(method, include_private_methods = false)
               super || #{name}.respond_to?(method, include_private_methods)
+            end
+
+            def [](key)
+              if parent_association_attributes.include? key.to_s
+                #{name}[key]
+              else
+                super
+              end
+            end
+
+            def []=(key, value)
+              if parent_association_attributes.include? key.to_s
+                #{name}[key] = value
+              else
+                super
+              end
             end
 
             protected
