@@ -91,7 +91,7 @@ describe "Submodel" do
 
   describe "acts as the superclass in has_many relations" do
     it "should return true for is_a? method when the supermodel is passed" do 
-      # (Pen.is_a? Product).should be_true
+      (Product.new.is_a? Product).should be_true
       pen = Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
       (pen.is_a? Product).should be_true
     end
