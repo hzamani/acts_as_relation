@@ -113,6 +113,16 @@ describe "Submodel" do
         product[:store_id].should_not be_nil
       end
     end
+
+    it "should access the child attributes in a has_many relation" do
+      store = Store.new(name: "Big Store")
+      store.products << Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
+      store.save!
+
+      store.reload
+
+      store.products.first.color.should eq 'red'
+    end
   end
 
   describe "Query Interface" do

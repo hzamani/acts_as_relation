@@ -150,6 +150,15 @@ module ActiveRecord
             self.#{association_name}
           end
           alias :specific_class :specific
+
+          def method_missing method, *arg, &block
+            if self.#{association_name} and self.#{association_name}.respond_to?(method, false)
+              self.#{association_name}.send(method, *arg, &block)
+            else
+              super
+            end
+          end
+
         EndCode
         class_eval code, __FILE__, __LINE__
       end
