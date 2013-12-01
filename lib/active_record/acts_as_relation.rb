@@ -104,6 +104,16 @@ module ActiveRecord
               end
             end
 
+            def is_a?(model_class)
+              if model_class.name.underscore.to_sym == :#{name}
+                return true
+              else
+                super
+              end
+            end
+            alias_method :instance_of?, :is_a?
+            alias_method :kind_of?, :is_a?
+
             protected
 
             def #{name}_must_be_valid
@@ -113,6 +123,7 @@ module ActiveRecord
                 end
               end
             end
+
           EndCode
           acts_as_model.module_eval code, __FILE__, __LINE__
         end
@@ -152,12 +163,22 @@ module ActiveRecord
           alias :specific_class :specific
 
           def method_missing method, *arg, &block
-            if self.#{association_name} and self.#{association_name}.respond_to?(method, false)
-              self.#{association_name}.send(method, *arg, &block)
+            if specific and specific.respond_to?(method, false)
+              specific.send(method, *arg, &block)
             else
               super
             end
           end
+
+          def is_a?(model_class)
+            if specific and specific.class == model_class
+              return true
+            else
+              super
+            end
+          end
+          alias_method :instance_of?, :is_a?
+          alias_method :kind_of?, :is_a?
 
         EndCode
         class_eval code, __FILE__, __LINE__
@@ -170,14 +191,14 @@ module ActiveRecord
       end
     end
 
-    def is_a?(model_class)
-      begin
-        return true if model_class == self.class
-        return true if self.class.acts_as_other_model? and self.class.acts_as_model_name == model_class.name.underscore.to_sym
-      rescue
-        return self.kind_of? model_class
-      end
-    end
+    # def is_a?(model_class)
+    #   begin
+    #     return true if model_class == self.class
+    #     return true if self.class.acts_as_other_model? and self.class.acts_as_model_name == model_class.name.underscore.to_sym
+    #   rescue
+    #     return self.kind_of? model_class
+    #   end
+    # end
   end
 end
 

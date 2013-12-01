@@ -92,8 +92,12 @@ describe "Submodel" do
   describe "acts as the superclass in has_many relations" do
     it "should return true for is_a? method when the supermodel is passed" do 
       (Product.new.is_a? Product).should be_true
+      (Product.new.instance_of? Product).should be_true
+      (Product.new.kind_of? Product).should be_true
       pen = Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
       (pen.is_a? Product).should be_true
+      (pen.instance_of? Product).should be_true
+      (pen.kind_of? Product).should be_true
     end
 
     it "should be appendable using << operator in a has_many relation" do
@@ -123,6 +127,19 @@ describe "Submodel" do
 
       store.products.first.color.should eq 'red'
     end
+
+    it "should behave as the subclass" do
+      store = Store.new(name: "Big Store")
+      store.products << Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
+      store.save!
+
+      store.reload
+
+      (store.products.first.is_a? Pen).should be_true
+      (store.products.first.instance_of? Pen).should be_true
+      (store.products.first.kind_of? Pen).should be_true
+    end
+    
   end
 
   describe "Query Interface" do
