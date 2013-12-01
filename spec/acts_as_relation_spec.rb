@@ -89,6 +89,59 @@ describe "Submodel" do
     lambda { pen.save }.should_not raise_error
   end
 
+  describe "acts as the superclass in has_many relations" do
+    it "should return true for is_a? method when the supermodel is passed" do 
+      (Product.new.is_a? Product).should be_true
+      (Product.new.instance_of? Product).should be_true
+      (Product.new.kind_of? Product).should be_true
+      pen = Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
+      (pen.is_a? Product).should be_true
+      (pen.instance_of? Product).should be_true
+      (pen.kind_of? Product).should be_true
+    end
+
+    it "should be appendable using << operator in a has_many relation" do
+      store = Store.new(name: "Big Store")
+      store.products << Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
+      store.save!
+    end
+
+    it "should sets the parent_id when using the << operator" do
+      store = Store.new(name: "Big Store")
+      store.products << Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
+      store.save!
+   
+      store.products.each do |product|
+        product.store.should_not be_nil
+        product.store_id.should_not be_nil
+        product[:store_id].should_not be_nil
+      end
+    end
+
+    it "should access the child attributes in a has_many relation" do
+      store = Store.new(name: "Big Store")
+      store.products << Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
+      store.save!
+
+      store.reload
+
+      store.products.first.color.should eq 'red'
+    end
+
+    it "should behave as the subclass" do
+      store = Store.new(name: "Big Store")
+      store.products << Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
+      store.save!
+
+      store.reload
+
+      (store.products.first.is_a? Pen).should be_true
+      (store.products.first.instance_of? Pen).should be_true
+      (store.products.first.kind_of? Pen).should be_true
+    end
+    
+  end
+
   describe "Query Interface" do
     describe "auto_join" do
       it "automaticaly joins Supermodel on Submodel queries" do

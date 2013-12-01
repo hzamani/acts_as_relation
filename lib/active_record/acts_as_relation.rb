@@ -50,6 +50,13 @@ module ActiveRecord
           }
 
           code = <<-EndCode
+
+            def parent_association_attributes
+              associations = #{class_name}.reflect_on_all_associations.map(&:name)
+              ignored = ["created_at", "updated_at", "#{association_name}_id", "#{association_name}_type", "#{association_name}"]
+              (associations - ignored).collect {|a| a.to_s + '_id'}
+            end
+
             def self.included(base)
               base.has_one :#{name}, #{has_one_options}
               base.validate :#{name}_must_be_valid
@@ -81,6 +88,32 @@ module ActiveRecord
               super || #{name}.respond_to?(method, include_private_methods)
             end
 
+            def [](key)
+              if parent_association_attributes.include? key.to_s
+                #{name}[key]
+              else
+                super
+              end
+            end
+
+            def []=(key, value)
+              if parent_association_attributes.include? key.to_s
+                #{name}[key] = value
+              else
+                super
+              end
+            end
+
+            def is_a?(model_class)
+              if model_class.name.underscore.to_sym == :#{name}
+                return true
+              else
+                super
+              end
+            end
+            alias_method :instance_of?, :is_a?
+            alias_method :kind_of?, :is_a?
+
             protected
 
             def #{name}_must_be_valid
@@ -90,6 +123,7 @@ module ActiveRecord
                 end
               end
             end
+
           EndCode
           acts_as_model.module_eval code, __FILE__, __LINE__
         end
@@ -127,6 +161,25 @@ module ActiveRecord
             self.#{association_name}
           end
           alias :specific_class :specific
+
+          def method_missing method, *arg, &block
+            if specific and specific.respond_to?(method, false)
+              specific.send(method, *arg, &block)
+            else
+              super
+            end
+          end
+
+          def is_a?(model_class)
+            if specific and specific.class == model_class
+              return true
+            else
+              super
+            end
+          end
+          alias_method :instance_of?, :is_a?
+          alias_method :kind_of?, :is_a?
+
         EndCode
         class_eval code, __FILE__, __LINE__
       end
