@@ -43,7 +43,7 @@ module ActiveRecord
 
         name             = model_name.to_s.underscore.singularize
         class_name       = options[:class_name] || name.camelcase
-        association_name = options[:as] || acts_as_association_name(name)
+        association_name = options[:as] || acts_as_association_name(class_name)
         module_name      = "ActsAs#{name.camelcase}"
 
         unless ActiveRecord::ActsAsModules.const_defined? module_name
