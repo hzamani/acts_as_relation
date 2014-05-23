@@ -39,6 +39,9 @@ module ActiveRecord
 
             define_method "#{acts_as.name}_with_autobuild" do
               send("#{acts_as.name}_without_autobuild") || send("build_#{acts_as.name}")
+              result = send("#{name}_without_autobuild") || send("build_#{name}")
+              result.send("#{association_name}=", self)
+              result
             end
 
             define_method :method_missing do |method, *arg, &block|
