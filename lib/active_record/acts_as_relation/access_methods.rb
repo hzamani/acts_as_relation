@@ -58,6 +58,21 @@ module ActiveRecord
       end
 
       protected :define_acts_as_accessors
+
+      def define_active_enum_forwarders(class_name)
+        instance_eval <<-EndCode, __FILE__, __LINE__
+          def enumerated_attributes(*args)
+            attr = #{class_name}.enumerated_attributes
+            attr.merge(super(*args) || {})
+          end
+
+          def active_enum_for(*args)
+            self_enum = super(*args)
+            return self_enum if self_enum
+            #{class_name}.active_enum_for(*args)
+          end
+        EndCode
+      end
     end
   end
 end

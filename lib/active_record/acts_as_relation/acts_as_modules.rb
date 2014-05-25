@@ -32,6 +32,11 @@ module ActiveRecord
             if defined?(::ProtectedAttributes)
               attr_accessible.update(acts_as.model.attr_accessible)
             end
+
+            # active_enum gem
+            if class_name.constantize.respond_to?(:enumerate)
+              base.send :define_active_enum_forwarders, class_name
+            end
           end
         end
 
