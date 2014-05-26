@@ -28,6 +28,7 @@ module ActiveRecord
 
             extend ActiveRecord::ActsAsRelation::AccessMethods
             define_acts_as_accessors(acts_as.name)
+            define_active_record_reflections(acts_as.class_name.constantize)
 
             if defined?(::ProtectedAttributes)
               attr_accessible.update(acts_as.model.attr_accessible)
