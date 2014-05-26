@@ -58,6 +58,16 @@ module ActiveRecord
       end
 
       protected :define_acts_as_accessors
+
+      def define_active_record_reflections(class_name)
+        instance_eval <<-EndCode, __FILE__, __LINE__
+          def reflect_on_association(*args)
+            self_value = super(*args)
+            return self_value if self_value
+            #{class_name}.reflect_on_association(*args)
+          end
+        EndCode
+      end
     end
   end
 end
