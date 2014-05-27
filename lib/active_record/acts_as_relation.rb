@@ -14,7 +14,7 @@ module ActiveRecord
 
         class_eval { default_scope -> { joins(acts_as.name) } } if options.fetch :auto_join, true
 
-        code = <<-EndCode
+        instance_eval <<-EndCode, __FILE__, __LINE__
           def acts_as_other_model?
             true
           end
@@ -23,14 +23,13 @@ module ActiveRecord
             "#{acts_as.name}".to_sym
           end
         EndCode
-        instance_eval code, __FILE__, __LINE__
       end
       alias :is_a :acts_as
 
       def acts_as_superclass options={}
         association_name = options[:as] || acts_as_association_name
 
-        code = <<-EndCode
+        class_eval <<-EndCode, __FILE__, __LINE__
           belongs_to :#{association_name}, :polymorphic => true
 
           def specific
@@ -52,7 +51,6 @@ module ActiveRecord
           alias_method :instance_of?, :is_a?
           alias_method :kind_of?, :is_a?
         EndCode
-        class_eval code, __FILE__, __LINE__
       end
       alias :is_a_superclass :acts_as_superclass
 
