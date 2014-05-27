@@ -63,6 +63,7 @@ module ActiveRecord
         instance_eval <<-EndCode, __FILE__, __LINE__
           def enumerated_attributes(*args)
             attr = #{class_name}.enumerated_attributes
+            attr ||= {}
             attr.merge(super(*args) || {})
           end
 
