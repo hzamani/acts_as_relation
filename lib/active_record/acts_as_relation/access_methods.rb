@@ -62,9 +62,10 @@ module ActiveRecord
       def define_active_enum_forwarders(class_name)
         instance_eval <<-EndCode, __FILE__, __LINE__
           def enumerated_attributes(*args)
-            attr = #{class_name}.enumerated_attributes
-            attr ||= {}
-            attr.merge(super(*args) || {})
+            super_attr = #{class_name}.enumerated_attributes
+            super_attr ||= {}
+            attr = super(*args)
+            attr.merge!(super_attr) { |key, old, _| old } unless attr.nil?
           end
 
           def active_enum_for(*args)
