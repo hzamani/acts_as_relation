@@ -40,7 +40,7 @@ module ActiveRecord
             define_method "#{acts_as.name}_with_autobuild" do
               send("#{acts_as.name}_without_autobuild") || send("build_#{acts_as.name}")
               result = send("#{name}_without_autobuild") || send("build_#{name}")
-              result.send("#{association_name}=", self)
+              result.send("#{association_name}=", self) unless result.send(association_name)
               result
             end
 
