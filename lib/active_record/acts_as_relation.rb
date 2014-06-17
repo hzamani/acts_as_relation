@@ -16,7 +16,7 @@ module ActiveRecord
           default_scope -> { includes(acts_as.name) }
         end
 
-        class_eval { default_scope -> { joins(acts_as.name) } } if options.fetch :auto_join, true
+        class_eval { default_scope -> { joins(acts_as.name) } } if options.fetch :auto_join, ::ActsAsRelation::auto_join
 
         instance_eval <<-EndCode, __FILE__, __LINE__ + 1
           def acts_as_other_model?
