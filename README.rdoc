@@ -43,11 +43,15 @@ option to +true+ on +products+ +create_table+ (or pass it name of the associatio
   end
 
 Or declare them as you do on a +polymorphic+ +belongs_to+ association, it this case
-you must pass name to +acts_as+ in +:as+ option:
+you must pass name to +acts_as+ and +acts_as_superclass+ in +:as+ option:
 
   change_table :products do |t|
     t.integer :producible_id
     t.string  :producible_type
+  end
+
+  class Product < ActiveRecord::Base
+    acts_as_superclass :as => :producible
   end
 
   class Pen < ActiveRecord::Base
