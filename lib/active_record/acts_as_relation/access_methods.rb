@@ -25,6 +25,15 @@ module ActiveRecord
             end
           end
 
+          def touch(name = nil, *args, &proc)
+            if attribute_method?(name.to_s)
+              super(name, *args, &proc)
+            else
+              super(nil, *args, &proc)
+              #{model_name}.touch(name, *args, &proc)
+            end
+          end
+
           private
 
           def write_attribute(attr_name, *args, &proc)
