@@ -34,6 +34,14 @@ module ActiveRecord
             end
           end
 
+          def save(*args)
+            super(*args) && #{model_name}.save(*args)
+          end
+
+          def save!(*args)
+            super(*args) && #{model_name}.save!(*args)
+          end
+
           private
 
           def write_attribute(attr_name, *args, &proc)
