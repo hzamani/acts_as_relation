@@ -40,6 +40,12 @@ describe "Submodel" do
     pen.parent_method.should == "RedPen - 0.8"
   end
 
+  it "raise NoMethodError correctly for Supermodel methods" do
+    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+    pen.should respond_to('dummy_raise_method')
+    lambda { pen.dummy_raise_method(nil) }.should raise_error(NoMethodError, /undefined method `dummy' for nil:NilClass/)
+  end
+
   # it "inherits Supermodel dynamic finders" do
   #   pending
   #   pen = Pen.create :name => 'RedPen'

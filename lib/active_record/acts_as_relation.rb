@@ -83,12 +83,10 @@ module ActiveRecord
             end
 
             define_method :method_missing do |method, *arg, &block|
-              begin
-                raise NoMethodError if method.to_s == 'id' || method.to_s == name
-
-                send(name).send(method, *arg, &block)
-              rescue NoMethodError
+              if (method.to_s == 'id' || method.to_s == name) || !send(name).respond_to?(method)
                 super(method, *arg, &block)
+              else
+                send(name).send(method, *arg, &block)
               end
             end
 
