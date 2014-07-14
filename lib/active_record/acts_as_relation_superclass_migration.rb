@@ -18,7 +18,7 @@ module ActiveRecord
           td.integer "#{association_name}_id"
           td.string  "#{association_name}_type"
           td.index ["#{association_name}_id", "#{association_name}_type"],
-                   name: "#{association_name}_index"
+                   name: "#{table_name}_#{association_name}_index"
         end
 
         yield td if block_given?
