@@ -11,8 +11,6 @@ module ActiveRecord
           @scope   = nil
         end
 
-        deprecation_warnings
-
         @name             = @model_name.to_s.underscore.singularize.to_sym
         @class_name       = @options[:class_name] || @name.to_s.camelcase
         @model            = @class_name.constantize
@@ -31,15 +29,6 @@ module ActiveRecord
 
       def parent_relations
         @parent_relations ||= (model.reflect_on_all_associations.map(&:name) - [association_name]).map { |a| a.to_s + '_id' }
-      end
-
-      def deprecation_warnings
-        if options[:conditions]
-          ActiveSupport::Deprecation.warn(":conditions is no longer supported by acts_as. Please use `where()` instead. Example: `acts_as :person, -> { where(name: 'John') }`")
-        end
-        if options[:include]
-          ActiveSupport::Deprecation.warn(":include is no longer supported by acts_as. Please use `includes()` instead. Example: `acts_as :person, -> { includes(:friends) }`")
-        end
       end
     end
   end
