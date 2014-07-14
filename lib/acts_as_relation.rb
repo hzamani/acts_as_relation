@@ -1,2 +1,5 @@
 require 'active_record/acts_as_relation'
+require 'active_record/acts_as_relation/acts_as'
+require 'active_record/acts_as_relation/access_methods'
+require 'active_record/acts_as_relation/acts_as_modules'
 require 'active_record/acts_as_relation_superclass_migration'
