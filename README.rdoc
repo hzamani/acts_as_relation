@@ -1,5 +1,6 @@
 {<img src="https://travis-ci.org/hzamani/acts_as_relation.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/hzamani/acts_as_relation]
 {<img src="https://coveralls.io/repos/hzamani/acts_as_relation/badge.png?branch=master" alt="Coverage Status" />}[https://coveralls.io/r/hzamani/acts_as_relation?branch=master]
+{<img src="https://codeclimate.com/github/hzamani/acts_as_relation.png" />}[https://codeclimate.com/github/hzamani/acts_as_relation]
 
 = ActsAsRelation
 This gem helps implement multiple-table-inheritance (MTI) methods to your ActiveRecord models.
