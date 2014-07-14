@@ -77,6 +77,38 @@ describe "Submodel" do
     end
   end
 
+  describe "#is_a?" do
+    it "should return true when the supermodel is passed" do
+      product = Product.new
+      product.is_a?(Product).should be_true
+      product.instance_of?(Product).should be_true
+      product.kind_of?(Product).should be_true
+
+      pen = Pen.new
+      pen.is_a?(Product).should be_true
+      pen.instance_of?(Product).should be_true
+      pen.kind_of?(Product).should be_true
+    end
+  end
+
+  context "in a has_many relation" do
+    it "should be appendable using << operator" do
+      store = Store.create(:name => "Big Store")
+      pen = Pen.create(:name => 'RedPen', :price => 0.8, :color => 'red')
+      store.products << pen
+      pen.store.should == store
+    end
+
+    it "should access child attributes" do
+      store = Store.create(:name => "Big Store")
+      pen = Pen.create(:name => 'RedPen', :price => 0.8, :color => 'red')
+      store.products << pen
+      store.reload
+      store.products.first.is_a?(Pen).should be_true
+      store.products.first.should == pen
+    end
+  end
+
   it "have supermodel attr_accessibles as attr_accessibles" do
     if defined?(::ProtectedAttributes)
       Pen.attr_accessible[:default].each do |a|

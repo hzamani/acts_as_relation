@@ -94,6 +94,32 @@ module ActiveRecord
               super(method, include_private_methods) || send(name).respond_to?(method, include_private_methods)
             end
 
+            define_method :is_a? do |klass|
+              klass.name == class_name ? true : super(klass)
+            end
+
+            define_method :parent_relations do
+              @@parent_relations ||= (
+                class_name.constantize.reflect_on_all_associations.map(&:name) -
+                [association_name]).map {|a| a.to_s + '_id'}
+            end
+
+            define_method :[] do |key|
+              if parent_relations.include?(key.to_s)
+                send(name)[key]
+              else
+                super(key)
+              end
+            end
+
+            define_method :[]= do |key, value|
+              if parent_relations.include?(key.to_s)
+                send(name)[key] = value
+              else
+                super(key,value)
+              end
+            end
+
             protected
 
             define_method "#{name}_must_be_valid" do
@@ -139,6 +165,20 @@ module ActiveRecord
             self.#{association_name}
           end
           alias :specific_class :specific
+
+          def method_missing method, *arg, &block
+            if specific and specific.respond_to?(method)
+              specific.send(method, *arg, &block)
+            else
+              super
+            end
+          end
+
+          def is_a? klass
+            (specific and specific.class == klass) ? true : super
+          end
+          alias_method :instance_of?, :is_a?
+          alias_method :kind_of?, :is_a?
         EndCode
         class_eval code, __FILE__, __LINE__
       end

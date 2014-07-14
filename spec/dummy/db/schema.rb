@@ -26,6 +26,8 @@ ActiveRecord::Schema.define(version: 4) do
     t.datetime "updated_at"
   end
 
+  add_index "pens", ["as_pen_id", "as_pen_type"], name: "pens_as_pen_index"
+
   create_table "products", force: true do |t|
     t.integer  "producible_id"
     t.string   "producible_type"
@@ -35,6 +37,8 @@ ActiveRecord::Schema.define(version: 4) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "products", ["producible_id", "producible_type"], name: "products_producible_index"
 
   create_table "stores", force: true do |t|
     t.string   "name"
