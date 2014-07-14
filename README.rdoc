@@ -1,10 +1,13 @@
+{<img src="https://travis-ci.org/hzamani/acts_as_relation.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/hzamani/acts_as_relation]
+{<img src="https://coveralls.io/repos/hzamani/acts_as_relation/badge.png?branch=master" alt="Coverage Status" />}[https://coveralls.io/r/hzamani/acts_as_relation?branch=master]
+
 = ActsAsRelation
 This gem helps implement multiple-table-inheritance (MTI) methods to your ActiveRecord models.
 By default, ActiveRecord only supports single-table inheritance (STI).
 MTI gives you the benefits of STI but without having to place dozens of empty fields into a single table.
 
-Take a traditional e-commerce application for example... 
-A product has common attributes (+name+, +price+, +image+ ...), 
+Take a traditional e-commerce application for example...
+A product has common attributes (+name+, +price+, +image+ ...),
 while each type of product has its own attributes...
 +pen+ has +color+, +book+ has +author+ and +publisher+ and so on.
 
@@ -18,7 +21,7 @@ If you are using Rails 3 you must use '~> 0.1' version specifier in Gemfile.
 
 == Usage
 +acts_as_relation+ uses a polymorphic +has_one+
-association to simulate multiple-table inheritance. 
+association to simulate multiple-table inheritance.
 For the e-commerce example you would declare the product as a +supermodel+ and all types of it as +acts_as+ +:product+
 (if you prefer you can use their aliases +is_a+ and +is_a_superclass+)
 
@@ -32,6 +35,10 @@ For the e-commerce example you would declare the product as a +supermodel+ and a
 
   class Book < ActiveRecord::Base
     acts_as :product
+  end
+
+  class Store < ActiveRecord::Base
+    has_many :products
   end
 
 To make this work, you need to declare both a foreign key column and a type column
@@ -57,7 +64,7 @@ you must pass name to +acts_as+ and +acts_as_superclass+ in +:as+ option:
   class Pen < ActiveRecord::Base
     acts_as :product, :as => :producible
   end
-  
+
   class Book < ActiveRecord::Base
     acts_as :product, :as => :producible
   end
@@ -89,7 +96,13 @@ methods (includeing accessors) so you can access them directly.
 
 On the other hand you can always access a specific object from its parent by calling +specific+ method on it:
 
-    Product.first.specific # will return a specific product, a pen for example
+  Product.first.specific # will return a specific product, a pen for example
+
+In +has_many+ case you can use subclasses:
+
+  store = Store.create
+  store.products << Pen.create
+  store.products.first # => <Pen: ...>
 
 == Options
 The +acts_as+ relation support these options:
@@ -114,4 +127,5 @@ Note that support for +:conditions+ and +:include+ has been removed. In their pl
 +where()+ and +includes()+:
 
     acts_as :product, -> { where(color: "yellow") }
+    acts_as :person, -> { includes(:friends) }
 
