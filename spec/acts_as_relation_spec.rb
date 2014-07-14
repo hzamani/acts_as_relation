@@ -3,10 +3,9 @@ require 'spec_helper'
 describe "Submodel" do
   it "inherits Supermodel attributes" do
     pen = Pen.new
-    ['name', 'name=', 'name_changed?', 'name_was',
-     'price', 'price=', 'price_changed?', 'price_was'].each do |m|
-    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
-      pen.should respond_to(m)
+    ['name', 'name=', 'name_changed?', 'name_was', 'price', 'price=',
+     'price_changed?', 'price_was'].each do |attribute|
+      pen.should respond_to(attribute)
     end
 
     pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
@@ -15,7 +14,7 @@ describe "Submodel" do
     pen.color.should == 'red'
 
     pen.price = 0.9
-    pen.price_changed?.should be_true
+    pen.price_changed?.should be true
     pen.price_was.should == 0.8
   end
 
@@ -67,7 +66,7 @@ describe "Submodel" do
 
   describe "#acts_as_other_model?" do
     it "return true on models wich acts_as other ones" do
-      Pen.acts_as_other_model?.should be_true
+      Pen.acts_as_other_model?.should be true
     end
   end
 
@@ -80,14 +79,14 @@ describe "Submodel" do
   describe "#is_a?" do
     it "should return true when the supermodel is passed" do
       product = Product.new
-      product.is_a?(Product).should be_true
-      product.instance_of?(Product).should be_true
-      product.kind_of?(Product).should be_true
+      product.is_a?(Product).should be true
+      product.instance_of?(Product).should be true
+      product.kind_of?(Product).should be true
 
       pen = Pen.new
-      pen.is_a?(Product).should be_true
-      pen.instance_of?(Product).should be_true
-      pen.kind_of?(Product).should be_true
+      pen.is_a?(Product).should be true
+      pen.instance_of?(Product).should be true
+      pen.kind_of?(Product).should be true
     end
   end
 
@@ -104,7 +103,7 @@ describe "Submodel" do
       pen = Pen.create(:name => 'RedPen', :price => 0.8, :color => 'red')
       store.products << pen
       store.reload
-      store.products.first.is_a?(Pen).should be_true
+      store.products.first.is_a?(Pen).should be true
       store.products.first.should == pen
     end
   end
@@ -135,7 +134,7 @@ describe "Submodel" do
         pen = Pen.create :name => 'RedPen',  :price => 0.8, :color => 'red'
         Pen.create :name => 'RedPen2', :price => 1.2, :color => 'red'
         Pen.create :name => 'BluePen', :price => 1.2, :color => 'blue'
-        lambda { Pen.where("price > 1").to_a }.should_not raise_error(ActiveRecord::StatementInvalid)
+        expect { Pen.where("price > 1").to_a }.not_to raise_error
         Pen.where("name = ?", "RedPen").should include(pen)
       end
 
