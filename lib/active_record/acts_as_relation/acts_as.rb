@@ -15,7 +15,7 @@ module ActiveRecord
         @class_name       = @options[:class_name] || @name.to_s.camelcase
         @model            = @class_name.constantize
         @association_name = @options[:as] || @model.acts_as_association_name
-        @module_name      = "ActsAs#{class_name}"
+        @module_name      = "ActsAs#{name.to_s.camelcase}"
         @module = ActiveRecord::ActsAsRelation::ActsAsModules.module_for(self)
       end
 
