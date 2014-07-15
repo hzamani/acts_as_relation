@@ -15,7 +15,7 @@ module ActiveRecord
           has_one_options = {
             as:         acts_as.association_name,
             class_name: acts_as.class_name,
-	          inverse_of: acts_as.association_name.to_sym,
+            inverse_of: acts_as.association_name.to_sym,
             autosave:   true,
             validate:   false,
             dependent:  acts_as.options.fetch(:dependent, :destroy),
