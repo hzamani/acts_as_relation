@@ -34,8 +34,8 @@ module ActiveRecord
             end
 
             # active_enum gem
-            if class_name.constantize.respond_to?(:enumerate)
-              base.send :define_active_enum_forwarders, class_name
+            if acts_as.class_name.constantize.respond_to?(:enumerate)
+              base.send :define_active_enum_forwarders, acts_as.class_name
             end
           end
         end
