@@ -95,7 +95,7 @@ module ActiveRecord
         define_method :column_for_attribute do |*args|
           self_column = super(*args)
           return self_column if self_column
-          send(name).column_for_attribute(*args)
+          send(acts_as.name).column_for_attribute(*args)
         end
 
         def validate_superclass(acts_as)
