@@ -14,7 +14,7 @@ module ActiveRecord
 
         class_eval { default_scope -> { joins(acts_as.name) } } if options.fetch :auto_join, true
 
-        instance_eval <<-EndCode, __FILE__, __LINE__
+        instance_eval <<-EndCode, __FILE__, __LINE__ + 1
           def acts_as_other_model?
             true
           end
@@ -26,18 +26,16 @@ module ActiveRecord
       end
       alias :is_a :acts_as
 
-      def acts_as_superclass options={}
-        association_name = options[:as] || acts_as_association_name
+      def acts_as_superclass(options={})
+        association_name = (options[:as] || acts_as_association_name).to_sym
 
-        class_eval <<-EndCode, __FILE__, __LINE__
-          belongs_to :#{association_name}, :polymorphic => true
+        class_eval do
+          belongs_to association_name, polymorphic: true
 
-          def specific
-            self.#{association_name}
-          end
-          alias :specific_class :specific
+          alias_method :specific, association_name
+          alias_method :specific_class, :specific
 
-          def method_missing method, *arg, &block
+          def method_missing(method, *arg, &block)
             if specific and specific.respond_to?(method)
               specific.send(method, *arg, &block)
             else
@@ -45,16 +43,16 @@ module ActiveRecord
             end
           end
 
-          def is_a? klass
+          def is_a?(klass)
             (specific and specific.class == klass) ? true : super
           end
           alias_method :instance_of?, :is_a?
           alias_method :kind_of?, :is_a?
-        EndCode
+        end
       end
       alias :is_a_superclass :acts_as_superclass
 
-      def acts_as_association_name model_name=nil
+      def acts_as_association_name(model_name=nil)
         model_name ||= self.name
         "as_#{model_name.to_s.demodulize.singularize.underscore}"
       end

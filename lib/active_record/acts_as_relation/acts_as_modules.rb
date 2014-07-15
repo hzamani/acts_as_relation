@@ -15,6 +15,7 @@ module ActiveRecord
           has_one_options = {
             as:         acts_as.association_name,
             class_name: acts_as.class_name,
+            inverse_of: acts_as.association_name.to_sym,
             autosave:   true,
             validate:   false,
             dependent:  acts_as.options.fetch(:dependent, :destroy),
@@ -42,9 +43,12 @@ module ActiveRecord
             end
 
             define_method :method_missing do |method, *arg, &block|
-              if (method.to_s == 'id' || method.to_s == name) || !send(acts_as.name).respond_to?(method)
+              if (method.to_s == 'id' || method.to_s == acts_as.name) || !send(acts_as.name).respond_to?(method)
                 super(method, *arg, &block)
               else
+                self.class_eval do
+                  delegate method, to: acts_as.name
+                end
                 send(acts_as.name).send(method, *arg, &block)
               end
             end
