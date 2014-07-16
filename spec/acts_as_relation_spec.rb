@@ -152,4 +152,12 @@ describe "Supermodel" do
       expect(pen.product.specific).to eq(pen)
     end
   end
+
+  context "on destroy" do
+    it "deletes specific subclass" do
+      pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+      pen.product.destroy
+      expect{ pen.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
 end

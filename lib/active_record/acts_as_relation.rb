@@ -30,7 +30,7 @@ module ActiveRecord
         association_name = (options[:as] || acts_as_association_name).to_sym
 
         class_eval do
-          belongs_to association_name, polymorphic: true
+          belongs_to association_name, polymorphic: true, dependent: :delete
 
           alias_method :specific, association_name
           alias_method :specific_class, :specific
