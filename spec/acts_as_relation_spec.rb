@@ -106,6 +106,15 @@ describe "Submodel" do
       expect(store.products.first.is_a?(Pen)).to be true
       expect(store.products.first).to eq(pen)
     end
+
+    it "associate relation on saving superclass object" do
+      store = Store.new(:name => "Big Store")
+      pen = Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
+      store.products << pen
+      store.save
+      store.reload
+      expect(store.products.first).to eq(pen)
+    end
   end
 
   it "have supermodel attr_accessibles as attr_accessibles" do
