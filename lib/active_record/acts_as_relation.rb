@@ -28,7 +28,7 @@ module ActiveRecord
           end
         EndCode
       end
-      alias :is_a :acts_as
+      alias_method :is_a, :acts_as
 
       def acts_as_superclass(options={})
         association_name = (options[:as] || acts_as_association_name).to_sym
@@ -54,7 +54,7 @@ module ActiveRecord
           alias_method :kind_of?, :is_a?
         end
       end
-      alias :is_a_superclass :acts_as_superclass
+      alias_method :is_a_superclass, :acts_as_superclass
 
       def is_a?(klass)
         if respond_to?(:acts_as_model_name) && acts_as_model_name == klass.name.downcase.to_sym
