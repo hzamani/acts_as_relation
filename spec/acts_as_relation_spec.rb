@@ -82,11 +82,20 @@ describe "Submodel" do
       expect(product.is_a?(Product)).to be true
       expect(product.instance_of?(Product)).to be true
       expect(product.kind_of?(Product)).to be true
+      expect(product.acts_as?(Product)).to be true
+      expect(product.acts_as?(String)).to be false
 
       pen = Pen.new
       expect(pen.is_a?(Product)).to be true
       expect(pen.instance_of?(Product)).to be true
       expect(pen.kind_of?(Product)).to be true
+      expect(pen.acts_as?(Product)).to be true
+      expect(pen.acts_as?(Store)).to be false
+    end
+
+    it "should return true when the supermodel is passed to model" do
+      expect(Pen.acts_as? Product).to be true
+      expect(Pen.acts_as? String).to be false
     end
   end
 

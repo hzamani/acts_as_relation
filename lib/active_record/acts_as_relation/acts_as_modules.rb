@@ -60,6 +60,7 @@ module ActiveRecord
             define_method :is_a? do |klass|
               klass.name == acts_as.class_name ? true : super(klass)
             end
+            alias_method :acts_as?, :is_a?
 
             define_method :[] do |key|
               if acts_as.parent_relations.include?(key.to_s)

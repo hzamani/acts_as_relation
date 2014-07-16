@@ -2,6 +2,10 @@ module ActiveRecord
   module ActsAsRelation
     extend ActiveSupport::Concern
 
+    included do
+      alias_method :acts_as?, :is_a?
+    end
+
     module ClassMethods
       def acts_as(model_name, scope=nil, options={})
         acts_as = ActsAs.new(model_name, scope, options)
@@ -51,6 +55,15 @@ module ActiveRecord
         end
       end
       alias :is_a_superclass :acts_as_superclass
+
+      def is_a?(klass)
+        if respond_to?(:acts_as_model_name) && acts_as_model_name == klass.name.downcase.to_sym
+          true
+        else
+          super
+        end
+      end
+      alias_method :acts_as?, :is_a?
 
       def acts_as_association_name(model_name=nil)
         model_name ||= self.name
