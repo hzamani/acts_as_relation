@@ -6,11 +6,26 @@ module ActiveRecord
         # before we query our superclass.
         class_eval <<-EndCode, __FILE__, __LINE__ + 1
           def read_attribute(attr_name, *args, &proc)
-            if attribute_method?(attr_name.to_s)
+            if attribute_method?(attr_name)
               super(attr_name, *args)
             else
               #{model_name}.read_attribute(attr_name, *args, &proc)
             end
+          end
+
+          def attributes
+            if #{model_name}.changed? || changed?
+              @attributes = #{model_name}.attributes.merge(super)
+            else
+              @attributes ||= #{model_name}.attributes.merge(super)
+            end
+          end
+
+          def attributes=(new_attributes)
+            sub = new_attributes.select { |k,v| attribute_method?(k) }
+            sup = new_attributes.select { |k,v| !attribute_method?(k) }
+            super(sub)
+            #{model_name}.attributes = sup
           end
 
           def touch(name = nil, *args, &proc)

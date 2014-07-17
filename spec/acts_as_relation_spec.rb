@@ -1,13 +1,27 @@
 require 'spec_helper'
 
 describe 'Submodel' do
-  it 'inherits Supermodel attributes' do
+  it 'respond to supermodel attributes' do
     pen = Pen.new
-    ['name', 'name=', 'name_changed?', 'name_was', 'price', 'price=',
-     'price_changed?', 'price_was'].each do |attribute|
-      expect(pen).to respond_to(attribute)
+    %w(name name= name_changed? name_was price price= price_changed? price_was).each do |at|
+      expect(pen).to respond_to(at)
     end
+  end
 
+  it 'returns supermodel attributes with #attributes' do
+    pen = Pen.new
+    expect(pen.attributes.keys).to include(*%w(name price))
+  end
+
+  it 'makes supermodel attributes assingeable through #attributes=' do
+    pen = Pen.new
+    pen.attributes = {name: 'test', price: 10, color: 'black'}
+    expect(pen.name).to eq('test')
+    expect(pen.price).to eq(10)
+    expect(pen.color).to eq('black')
+  end
+
+  it 'accept supermodel attributes on create' do
     pen = Pen.create name: 'RedPen', price: 0.8, color: 'red'
     expect(pen.name).to eq('RedPen')
     expect(pen.price).to eq(0.8)
