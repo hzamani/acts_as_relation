@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-describe "Submodel" do
-  it "inherits Supermodel attributes" do
+describe 'Submodel' do
+  it 'inherits Supermodel attributes' do
     pen = Pen.new
     ['name', 'name=', 'name_changed?', 'name_was', 'price', 'price=',
      'price_changed?', 'price_was'].each do |attribute|
       expect(pen).to respond_to(attribute)
     end
 
-    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
-    expect(pen.name).to  eq('RedPen')
+    pen = Pen.create name: 'RedPen', price: 0.8, color: 'red'
+    expect(pen.name).to eq('RedPen')
     expect(pen.price).to eq(0.8)
     expect(pen.color).to eq('red')
 
@@ -18,29 +18,29 @@ describe "Submodel" do
     expect(pen.price_was).to eq(0.8)
   end
 
-  it "inherits Supermodel associations" do
-    store = Store.create :name => 'Big Store'
-    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+  it 'inherits Supermodel associations' do
+    store = Store.create name: 'Big Store'
+    pen = Pen.create name: 'RedPen', price: 0.8, color: 'red'
     pen.store = store
     pen.save
     expect(Pen.find(pen.id).store).to eq(store)
     expect(Pen.find(pen.id).product.store).to eq(store)
   end
 
-  it "inherits Supermodel validations" do
+  it 'inherits Supermodel validations' do
     pen = Pen.new
     expect(pen).to be_invalid
     expect(pen.errors.keys).to include(:name, :price, :color)
   end
 
-  it "inherits Supermodel methods" do
-    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+  it 'inherits Supermodel methods' do
+    pen = Pen.create name: 'RedPen', price: 0.8, color: 'red'
     expect(pen).to respond_to('parent_method')
-    expect(pen.parent_method).to eq("RedPen - 0.8")
+    expect(pen.parent_method).to eq('RedPen - 0.8')
   end
 
-  it "raise NoMethodError correctly for Supermodel methods" do
-    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+  it 'raise NoMethodError correctly for Supermodel methods' do
+    pen = Pen.create name: 'RedPen', price: 0.8, color: 'red'
     expect(pen).to respond_to('dummy_raise_method')
     expect { pen.dummy_raise_method(nil) }.to raise_error(NoMethodError, /undefined method `dummy' for nil:NilClass/)
   end
@@ -52,73 +52,73 @@ describe "Submodel" do
   #   Product.find_by_name('SomeProduct').should == product
   # end
 
-  it "should raise NoMethodEror on unexisting method calls" do
-    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+  it 'should raise NoMethodEror on unexisting method calls' do
+    pen = Pen.create name: 'RedPen', price: 0.8, color: 'red'
     expect { pen.unexisted_method }.to raise_error(NoMethodError)
   end
 
-  it "destroies Supermodel on destroy" do
-    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+  it 'destroies Supermodel on destroy' do
+    pen = Pen.create name: 'RedPen', price: 0.8, color: 'red'
     product_id = pen.product.id
     pen.destroy
     expect { Product.find product_id }.to raise_error(ActiveRecord::RecordNotFound)
   end
 
-  describe "#acts_as_other_model?" do
-    it "return true on models wich acts_as other ones" do
+  describe '#acts_as_other_model?' do
+    it 'return true on models wich acts_as other ones' do
       expect(Pen.acts_as_other_model?).to be true
     end
   end
 
-  describe "#acts_as_model_name" do
-    it "returns name of model wich it acts as" do
+  describe '#acts_as_model_name' do
+    it 'returns name of model wich it acts as' do
       expect(Pen.acts_as_model_name).to eq(:product)
     end
   end
 
-  describe "#is_a?" do
-    it "should return true when the supermodel is passed" do
+  describe '#is_a?' do
+    it 'should return true when the supermodel is passed' do
       product = Product.new
       expect(product.is_a?(Product)).to be true
       expect(product.instance_of?(Product)).to be true
-      expect(product.kind_of?(Product)).to be true
+      expect(product.is_a?(Product)).to be true
       expect(product.acts_as?(Product)).to be true
       expect(product.acts_as?(String)).to be false
 
       pen = Pen.new
       expect(pen.is_a?(Product)).to be true
       expect(pen.instance_of?(Product)).to be true
-      expect(pen.kind_of?(Product)).to be true
+      expect(pen.is_a?(Product)).to be true
       expect(pen.acts_as?(Product)).to be true
       expect(pen.acts_as?(Store)).to be false
     end
 
-    it "should return true when the supermodel is passed to model" do
+    it 'should return true when the supermodel is passed to model' do
       expect(Pen.acts_as? Product).to be true
       expect(Pen.acts_as? String).to be false
     end
   end
 
-  context "in a has_many relation" do
-    it "should be appendable using << operator" do
-      store = Store.create(:name => "Big Store")
-      pen = Pen.create(:name => 'RedPen', :price => 0.8, :color => 'red')
+  context 'in a has_many relation' do
+    it 'should be appendable using << operator' do
+      store = Store.create(name: 'Big Store')
+      pen = Pen.create(name: 'RedPen', price: 0.8, color: 'red')
       store.products << pen
       expect(pen.store).to eq(store)
     end
 
-    it "should access child attributes" do
-      store = Store.create(:name => "Big Store")
-      pen = Pen.create(:name => 'RedPen', :price => 0.8, :color => 'red')
+    it 'should access child attributes' do
+      store = Store.create(name: 'Big Store')
+      pen = Pen.create(name: 'RedPen', price: 0.8, color: 'red')
       store.products << pen
       store.reload
       expect(store.products.first.is_a?(Pen)).to be true
       expect(store.products.first).to eq(pen)
     end
 
-    it "associate relation on saving superclass object" do
-      store = Store.new(:name => "Big Store")
-      pen = Pen.new(:name => 'RedPen', :price => 0.8, :color => 'red')
+    it 'associate relation on saving superclass object' do
+      store = Store.new(name: 'Big Store')
+      pen = Pen.new(name: 'RedPen', price: 0.8, color: 'red')
       store.products << pen
       store.save
       store.reload
@@ -126,7 +126,7 @@ describe "Submodel" do
     end
   end
 
-  it "have supermodel attr_accessibles as attr_accessibles" do
+  it 'have supermodel attr_accessibles as attr_accessibles' do
     if defined?(::ProtectedAttributes)
       Pen.attr_accessible[:default].each do |a|
         expect(Pencil.attr_accessible[:default]).to include(a)
@@ -134,48 +134,48 @@ describe "Submodel" do
     end
   end
 
-  it "should be findable" do
-    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+  it 'should be findable' do
+    pen = Pen.create name: 'RedPen', price: 0.8, color: 'red'
     pen = Pen.find(pen.id)
     expect(pen).to be_valid
   end
 
-  it "should be saveable" do
-    pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+  it 'should be saveable' do
+    pen = Pen.create name: 'RedPen', price: 0.8, color: 'red'
     pen = Pen.find(pen.id)
     expect { pen.save }.not_to raise_error
   end
 
-  describe "Query Interface" do
-    describe "auto_join" do
-      it "automaticaly joins Supermodel on Submodel queries" do
-        pen = Pen.create :name => 'RedPen',  :price => 0.8, :color => 'red'
-        Pen.create :name => 'RedPen2', :price => 1.2, :color => 'red'
-        Pen.create :name => 'BluePen', :price => 1.2, :color => 'blue'
-        expect { Pen.where("price > 1").to_a }.not_to raise_error
-        expect(Pen.where("name = ?", "RedPen")).to include(pen)
+  describe 'Query Interface' do
+    describe 'auto_join' do
+      it 'automaticaly joins Supermodel on Submodel queries' do
+        pen = Pen.create name: 'RedPen',  price: 0.8, color: 'red'
+        Pen.create name: 'RedPen2', price: 1.2, color: 'red'
+        Pen.create name: 'BluePen', price: 1.2, color: 'blue'
+        expect { Pen.where('price > 1').to_a }.not_to raise_error
+        expect(Pen.where('name = ?', 'RedPen')).to include(pen)
       end
 
-      it "can be disabled by setting auto_join option to false" do
-        expect { Pencil.where("name = 1").to_a }.to raise_error(ActiveRecord::StatementInvalid)
+      it 'can be disabled by setting auto_join option to false' do
+        expect { Pencil.where('name = 1').to_a }.to raise_error(ActiveRecord::StatementInvalid)
       end
     end
   end
 end
 
-describe "Supermodel" do
-  describe "#specific" do
-    it "returns the specific subclass object" do
-      pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+describe 'Supermodel' do
+  describe '#specific' do
+    it 'returns the specific subclass object' do
+      pen = Pen.create name: 'RedPen', price: 0.8, color: 'red'
       expect(pen.product.specific).to eq(pen)
     end
   end
 
-  context "on destroy" do
-    it "deletes specific subclass" do
-      pen = Pen.create :name => 'RedPen', :price => 0.8, :color => 'red'
+  context 'on destroy' do
+    it 'deletes specific subclass' do
+      pen = Pen.create name: 'RedPen', price: 0.8, color: 'red'
       pen.product.destroy
-      expect{ pen.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { pen.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end

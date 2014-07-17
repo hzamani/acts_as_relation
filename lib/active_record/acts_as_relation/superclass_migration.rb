@@ -8,27 +8,25 @@ module ActiveRecord
       end
 
       def create_table_with_as_relation_superclass(table_name, options = {})
-        create_table_without_as_relation_superclass(table_name, options) do |td|
-          if superclass = options[:as_relation_superclass]
-            association_name = if superclass.is_a? Symbol or superclass.is_a? String then
-                                 superclass
-                               else
-                                 ActiveRecord::Base.acts_as_association_name table_name
-                               end
+        create_table_without_as_relation_superclass(table_name, options) do |t|
+          if options.key? :as_relation_superclass
+            name = options[:as_relation_superclass]
+            if name == true
+              name = ActiveRecord::Base.acts_as_association_name table_name
+            end
 
-            td.integer "#{association_name}_id"
-            td.string  "#{association_name}_type"
-            td.index ["#{association_name}_id", "#{association_name}_type"],
-                     name: "#{table_name}_#{association_name}_index"
+            t.integer "#{name}_id"
+            t.string "#{name}_type"
+            t.index ["#{name}_id", "#{name}_type"], name: "#{table_name}_#{name}_index"
           end
 
-          yield td if block_given?
+          yield t if block_given?
         end
       end
     end
   end
-end
 
-module ActiveRecord::ConnectionAdapters::SchemaStatements
-  include ActiveRecord::ActsAsRelation::SuperclassMigration
+  module ConnectionAdapters::SchemaStatements
+    include ActsAsRelation::SuperclassMigration
+  end
 end

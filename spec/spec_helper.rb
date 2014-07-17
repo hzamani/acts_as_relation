@@ -1,11 +1,11 @@
 require 'coveralls'
 Coveralls.wear!
 
-ENV["RAILS_ENV"] ||= 'test'
-require File.expand_path("../dummy/config/environment", __FILE__)
+ENV['RAILS_ENV'] ||= 'test'
+require File.expand_path('../dummy/config/environment', __FILE__)
 require 'rspec/rails'
 
-Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
+Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
 require 'rake'
 Dummy::Application.load_tasks

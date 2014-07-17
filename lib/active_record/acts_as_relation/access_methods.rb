@@ -1,8 +1,7 @@
 module ActiveRecord
   module ActsAsRelation
     module AccessMethods
-      protected
-      def define_acts_as_accessors(attribs, model_name)
+      def define_acts_as_accessors(model_name)
         # The weird order of the if-else branches is so that we query ourselves
         # before we query our superclass.
         class_eval <<-EndCode, __FILE__, __LINE__ + 1
@@ -42,6 +41,8 @@ module ActiveRecord
           end
         EndCode
       end
+
+      protected :define_acts_as_accessors
     end
   end
 end

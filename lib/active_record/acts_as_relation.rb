@@ -7,11 +7,11 @@ module ActiveRecord
     end
 
     module ClassMethods
-      def acts_as(model_name, scope=nil, options={})
+      def acts_as(model_name, scope = nil, options = {})
         acts_as = ActsAs.new(model_name, scope, options)
 
         class_eval do
-          include acts_as.module
+          include ActiveRecord::ActsAsRelation::ActsAsModules[acts_as]
 
           default_scope -> { includes(acts_as.name) }
         end
@@ -30,7 +30,7 @@ module ActiveRecord
       end
       alias_method :is_a, :acts_as
 
-      def acts_as_superclass(options={})
+      def acts_as_superclass(options = {})
         association_name = (options[:as] || acts_as_association_name).to_sym
 
         class_eval do
@@ -40,7 +40,7 @@ module ActiveRecord
           alias_method :specific_class, :specific
 
           def method_missing(method, *arg, &block)
-            if specific and specific.respond_to?(method)
+            if specific && specific.respond_to?(method)
               specific.send(method, *arg, &block)
             else
               super
@@ -48,7 +48,7 @@ module ActiveRecord
           end
 
           def is_a?(klass)
-            (specific and specific.class == klass) ? true : super
+            (specific && specific.class == klass) ? true : super
           end
           alias_method :instance_of?, :is_a?
           alias_method :kind_of?, :is_a?
@@ -65,14 +65,14 @@ module ActiveRecord
       end
       alias_method :acts_as?, :is_a?
 
-      def acts_as_association_name(model_name=nil)
-        model_name ||= self.name
+      def acts_as_association_name(model_name = nil)
+        model_name ||= name
         "as_#{model_name.to_s.demodulize.singularize.underscore}"
       end
     end
   end
-end
 
-class ActiveRecord::Base
-  include ActiveRecord::ActsAsRelation
+  class Base
+    include ActsAsRelation
+  end
 end
