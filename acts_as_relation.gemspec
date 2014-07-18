@@ -20,12 +20,14 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
   s.require_paths = ['lib']
 
+  s.required_ruby_version = '>= 1.9'
+
   # Dependencies (installed via 'bundle install')...
   s.add_development_dependency 'rake'
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'sqlite3'
-  s.add_development_dependency 'rspec-rails', '>= 2.14'
-  s.add_development_dependency 'rails', '>= 3'
+  s.add_development_dependency 'rspec-rails', '~> 2.14'
+  s.add_development_dependency 'rails', '~> 4.0'
   s.add_development_dependency 'database_cleaner'
-  s.add_dependency 'activerecord', '>= 3'
+  s.add_dependency 'activerecord', '~> 4.0'
 end
