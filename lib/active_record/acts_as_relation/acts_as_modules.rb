@@ -28,7 +28,7 @@ module ActiveRecord
 
             extend ActiveRecord::ActsAsRelation::AccessMethods
             define_acts_as_accessors(acts_as.name)
-            define_active_record_reflections(acts_as.class_name.constantize)
+            define_acts_as_reflectors(acts_as.name, acts_as.class_name)
 
             if defined?(::ProtectedAttributes)
               attr_accessible.update(acts_as.model.attr_accessible)
@@ -90,12 +90,6 @@ module ActiveRecord
               end
             end
           end
-        end
-
-        define_method :column_for_attribute do |*args|
-          self_column = super(*args)
-          return self_column if self_column
-          send(acts_as.name).column_for_attribute(*args)
         end
 
         def validate_superclass(acts_as)

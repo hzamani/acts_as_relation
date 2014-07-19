@@ -57,17 +57,23 @@ module ActiveRecord
         EndCode
       end
 
-      def define_active_record_reflections(class_name)
+      def define_acts_as_reflectors(model_name, superclass_name)
         class_eval <<-EndCode, __FILE__, __LINE__
-          def reflect_on_association(*args)
+          def self.reflect_on_association(*args)
             self_value = super(*args)
             return self_value if self_value
-            #{class_name}.reflect_on_association(*args)
+            #{superclass_name}.reflect_on_association(*args)
+          end
+
+          def column_for_attribute(*args)
+            self_column = super(*args)
+            return self_column if self_column
+            #{class_name}.column_for_attribute(*args)
           end
         EndCode
       end
 
-      protected :define_acts_as_accessors, :define_active_record_reflections
+      protected :define_acts_as_accessors, :define_acts_as_reflectors
     end
   end
 end
