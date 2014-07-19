@@ -13,7 +13,7 @@ module ActiveRecord
         class_eval do
           include ActiveRecord::ActsAsRelation::ActsAsModules[acts_as]
 
-          default_scope -> { includes(acts_as.name) }
+          default_scope -> { includes(acts_as.name).references(acts_as.name) }
         end
 
         class_eval { default_scope -> { joins(acts_as.name) } } if options.fetch :auto_join, ::ActsAsRelation.auto_join
