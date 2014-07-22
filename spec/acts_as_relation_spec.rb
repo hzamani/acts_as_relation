@@ -169,10 +169,6 @@ describe 'Submodel' do
         expect { Pen.where('price > 1').to_a }.not_to raise_error
         expect(Pen.where('name = ?', 'RedPen')).to include(pen)
       end
-
-      it 'can be disabled by setting auto_join option to false' do
-        expect { Pencil.where('name = 1').to_a }.to raise_error(ActiveRecord::StatementInvalid)
-      end
     end
   end
 end

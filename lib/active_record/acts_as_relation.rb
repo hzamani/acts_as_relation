@@ -13,10 +13,8 @@ module ActiveRecord
         class_eval do
           include ActiveRecord::ActsAsRelation::ActsAsModules[acts_as]
 
-          default_scope -> { includes(acts_as.name) }
+          default_scope -> { eager_load(acts_as.name) }
         end
-
-        class_eval { default_scope -> { joins(acts_as.name) } } if options.fetch :auto_join, true
 
         instance_eval <<-EndCode, __FILE__, __LINE__ + 1
           def acts_as_other_model?
