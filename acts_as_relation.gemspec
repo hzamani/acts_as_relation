@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 $LOAD_PATH.push File.expand_path('../lib', __FILE__)
-require 'version'
+require 'active_record/acts_as_relation/version'
 
 Gem::Specification.new do |s|
 
