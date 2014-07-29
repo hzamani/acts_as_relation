@@ -10,11 +10,7 @@ module ActiveRecord
       def acts_as(model_name, scope = nil, options = {})
         acts_as = ActsAs.new(model_name, scope, options)
 
-        class_eval do
-          include ActiveRecord::ActsAsRelation::ActsAsModules[acts_as]
-
-          default_scope -> { eager_load(acts_as.name) }
-        end
+        include ActiveRecord::ActsAsRelation::ActsAsModules[acts_as]
 
         instance_eval <<-EndCode, __FILE__, __LINE__ + 1
           def acts_as_other_model?
@@ -72,5 +68,6 @@ module ActiveRecord
 
   class Base
     include ActsAsRelation
+    warn "acts_as_relation is depricated, please use active_record-acts_as gem."
   end
 end

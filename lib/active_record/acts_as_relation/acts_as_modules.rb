@@ -22,6 +22,8 @@ module ActiveRecord
           acts_as.module.extend ActiveSupport::Concern
           acts_as.module.included do
             has_one acts_as.name, acts_as.scope, acts_as.has_one_options
+            default_scope -> { eager_load(acts_as.name) }
+
             alias_method_chain acts_as.name, :autobuild
 
             validate "#{acts_as.name}_must_be_valid".to_sym

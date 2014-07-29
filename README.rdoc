@@ -3,6 +3,9 @@
 {<img src="https://coveralls.io/repos/hzamani/acts_as_relation/badge.png?branch=master" alt="Coverage Status" />}[https://coveralls.io/r/hzamani/acts_as_relation?branch=master]
 {<img src="https://codeclimate.com/github/hzamani/acts_as_relation.png" />}[https://codeclimate.com/github/hzamani/acts_as_relation]
 
+= Deprication
+This gem is depricated, please use {active_record-acts_as}(https://github.com/hzamani/active_record-acts_as) which is a full refactor of this one.
+
 = ActsAsRelation
 This gem helps implement multiple-table-inheritance (MTI) methods to your ActiveRecord models.
 By default, ActiveRecord only supports single-table inheritance (STI).
