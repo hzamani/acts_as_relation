@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     acts_as_relation (1.1.2)
-      activerecord (>= 4.0.0)
+      activerecord (~> 4)
 
 GEM
   remote: https://rubygems.org/
@@ -126,10 +126,10 @@ PLATFORMS
 
 DEPENDENCIES
   acts_as_relation!
-  bundler
+  bundler (~> 1.6)
   coveralls
-  database_cleaner
-  rails (>= 4.0.0)
-  rake
-  rspec-rails (>= 3.0.0)
-  sqlite3
+  database_cleaner (~> 1.3)
+  rails (~> 4)
+  rake (~> 10)
+  rspec-rails (~> 3)
+  sqlite3 (~> 1.3)

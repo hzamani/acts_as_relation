@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'http://github.com/hzamani/acts_as_relation'
   s.summary     = 'Easy multi-table inheritance for rails'
   s.description = "This 'acts_as' extension provides multi-table inheritance for rails models."
+  s.license     = 'MIT'
 
   # Load Paths...
   s.files         = `git ls-files`.split("\n")
@@ -23,11 +24,12 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.9'
 
   # Dependencies (installed via 'bundle install')...
-  s.add_development_dependency 'rake'
-  s.add_development_dependency 'bundler'
-  s.add_development_dependency 'sqlite3'
-  s.add_development_dependency 'rspec-rails', '>= 3.0.0'
-  s.add_development_dependency 'rails', '>= 4.0.0'
-  s.add_development_dependency 'database_cleaner'
-  s.add_dependency 'activerecord', '>= 4.0.0'
+  s.add_development_dependency 'rake', '~> 10'
+  s.add_development_dependency 'bundler', '~> 1.6'
+  s.add_development_dependency 'sqlite3', '~> 1.3'
+  s.add_development_dependency 'rspec-rails', '~> 3'
+  s.add_development_dependency 'rails', '~> 4'
+  s.add_development_dependency 'database_cleaner', '~> 1.3'
+  s.add_dependency 'activerecord', '~> 4'
 end
+
