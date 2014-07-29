@@ -6,7 +6,7 @@ module ActiveRecord
         # before we query our superclass.
         class_eval <<-EndCode, __FILE__, __LINE__ + 1
           def read_attribute(attr_name, *args, &proc)
-            if attribute_method?(attr_name)
+            if attribute_method?(attr_name.to_s)
               super(attr_name, *args)
             else
               #{model_name}.read_attribute(attr_name, *args, &proc)
