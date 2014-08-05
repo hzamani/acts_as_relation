@@ -57,7 +57,26 @@ module ActiveRecord
         EndCode
       end
 
-      protected :define_acts_as_accessors
+      def define_acts_as_forwarders(acts_as)
+        if acts_as.class_name.constantize.respond_to?(:enumerate)
+          class_eval <<-EndCode, __FILE__, __LINE__ + 1
+            def self.enumerated_attributes(*args)
+              super_attr = #{acts_as.class_name}.enumerated_attributes
+              super_attr ||= {}
+              attr = super(*args)
+              attr.merge!(super_attr) { |key, old, _| old } unless attr.nil?
+            end
+
+            def self.active_enum_for(*args)
+              self_enum = super(*args)
+              return self_enum if self_enum
+              #{acts_as.class_name}.active_enum_for(*args)
+            end
+          EndCode
+        end
+      end
+
+      protected :define_acts_as_accessors, :define_acts_as_forwarders
     end
   end
 end
