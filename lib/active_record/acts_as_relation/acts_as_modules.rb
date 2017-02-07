@@ -40,7 +40,12 @@ module ActiveRecord
         def autobuild_superclass(acts_as)
           acts_as.module.module_eval do
             define_method "#{acts_as.name}_with_autobuild" do
-              send("#{acts_as.name}_without_autobuild") || send("build_#{acts_as.name}")
+              result = send("#{acts_as.name}_without_autobuild")
+              unless result
+                result = send("build_#{acts_as.name}")
+                result.send("#{acts_as.association_name}=", self)
+              end
+              result
             end
           end
         end
